@@ -41,25 +41,25 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
+#define RX_BUFFER_SIZE 64
+extern char receive_buffer[RX_BUFFER_SIZE];
+extern char transmit_buffer[RX_BUFFER_SIZE];
 
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-#define RX_BUFFER_SIZE 64
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-extern uint8_t rx_buffer[RX_BUFFER_SIZE];
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
-
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

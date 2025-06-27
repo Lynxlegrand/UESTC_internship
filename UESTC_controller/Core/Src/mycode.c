@@ -66,22 +66,27 @@ void shorten_after_last_crlf(char* str) {
     }
 }
 
-void process_rx_buffer(uint8_t* rx_buffer, int received){
-	char tram[received];
-	strcpy(tram,buffer_to_char(rx_buffer, 0, received));
-	//shorten_after_last_crlf(tram);							//permet de raccourcir la trame si besoin est
-	for (int i = 0; i < COMMAND_COUNT; i++) {
-		if (strcmp(tram, command_table_rx[i].command) == 0) {
-			command_table_rx[i].handler();
-	        return;
+
+// fonction utilisée dans le main.c : HAL_UARTEx_RxEventCallback
+void process_rx_buffer(char ch){
+	static uint32_t strlen = 0;
+	switch (ch){
+	case '\0' :
+		receive_buffer[0] = '\0';
+		strlen = 0;
+		break;
+	default:
+		if (strlen < RX_BUFFER_SIZE){
+			strncat((char*)receive_buffer,&ch,1);
+			++strlen;
 		}
+
+
 	}
-	//handle_unknown(); // Si aucune commande ne correspond
 
 
 
 
-	//command_table[tram].handler();
 
 
 }

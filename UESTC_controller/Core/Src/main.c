@@ -52,7 +52,11 @@ DMA_HandleTypeDef hdma_usart1_rx;
 
 uint16_t adcData[ADC_NUM_CONVERSIONS];
 int gpioData[GPIO_NUM_CONVERSIONS];
-uint8_t rx_buffer[RX_BUFFER_SIZE];
+
+uint8_t rx_dma_buffer[RX_BUFFER_SIZE];
+char receive_buffer[RX_BUFFER_SIZE];
+char transmit_buffer[RX_BUFFER_SIZE];
+
 
 /* USER CODE END PV */
 
@@ -112,20 +116,8 @@ int main(void)
   HAL_TIM_Base_Start(&htim3); // demarer timer 3
 
   //Config de l'USART1 pour le BLE RX
-  HAL_UART_Receive_DMA(&huart1, rx_buffer, RX_BUFFER_SIZE);
-  __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE); // Permet d'activer le flag qui renvoit le pointeur vers USART1_IRQHandler quand l'usart ne reçoit plus de données après un certain temps
-
-  int isSizeRxed = 0;
-  uint16_t size = 0;
-
-  void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	  HAL_UART_Receive_DMA(&huart1, rx_buffer, RX_BUFFER_SIZE);
-  }
-
-
-
-
-
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t*) &rx_dma_buffer, (uint16_t) RX_BUFFER_SIZE); // Envoie une interruption quand le buffer est rempli ou quand il n'y a plus de caractère reçu
+  //interruption traitée dans HAL_UARTEx_RxEventCallback
 
   //Config de l'USART1 pour le BLE TX
 
@@ -409,6 +401,18 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+// Permet de remettre la position du pointeur du DMA à 0 et de connaître la longueur de la chaine de caractère reçue
+	void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t offset)
+{
+		static uint16_t last_offset = 0;
+		if (offset < last_offset){
+			last_offset = 0;
+		}
+		while(last_offset < offset){
+			process_rx_buffer((char) rx_dma_buffer[last_offset]);
+			++last_offset;
+		}
+}
 /* USER CODE END 4 */
 
 /**

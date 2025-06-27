@@ -20,7 +20,7 @@ typedef struct {
 // Prototypes
 void clear_buffer(uint8_t *buffer, int size);
 char* buffer_to_char(uint8_t* buffer, int start_index, int length);
-void process_rx_buffer(uint8_t *rx_buffer, int received);
+void process_rx_buffer(char ch);
 void shorten_after_last_crlf(char* str);
 
 void handle_BLE_CONN(void);

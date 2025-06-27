@@ -281,10 +281,10 @@ void DMA1_Channel5_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel5_IRQn 0 */
 
-
   /* USER CODE END DMA1_Channel5_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_usart1_rx);
   /* USER CODE BEGIN DMA1_Channel5_IRQn 1 */
+
   /* USER CODE END DMA1_Channel5_IRQn 1 */
 }
 
@@ -322,14 +322,7 @@ void EXTI9_5_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
-	if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE)) {
 
-	}
-	__HAL_UART_CLEAR_IDLEFLAG(&huart1);
-	int received = RX_BUFFER_SIZE - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);
-	process_rx_buffer(rx_buffer,received);
-	memset(rx_buffer, 0, RX_BUFFER_SIZE);  // remettre le buffer à 0
-	HAL_UART_Receive_DMA(&huart1, rx_buffer, RX_BUFFER_SIZE);  // relancer DMA
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
