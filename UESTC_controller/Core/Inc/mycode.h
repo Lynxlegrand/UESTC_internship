@@ -19,9 +19,11 @@ typedef struct {
 
 // Prototypes
 void clear_buffer(uint8_t *buffer, int size);
-char* buffer_to_char(uint8_t* buffer, int start_index, int length);
-void process_rx_buffer(char ch);
+void buffer_to_char(uint8_t* buffer, char* char_buff, int max_len);
+void add_char_to_buff(char ch, char* buff);
+void fill_char_buff(char*buff, uint8_t* dma_buff, uint16_t offset);
 void shorten_after_last_crlf(char* str);
+void process_trame(char* receive_buffer);
 
 void handle_BLE_CONN(void);
 void handle_BLE_DISC(void);

@@ -1,6 +1,3 @@
-../Core/Src/mycode.c:30:6:clear_buffer	24	static
-../Core/Src/mycode.c:36:7:buffer_to_char	32	static
-../Core/Src/mycode.c:51:6:shorten_after_last_crlf	24	static
-../Core/Src/mycode.c:71:6:process_rx_buffer	16	static
-../Core/Src/mycode.c:95:6:handle_BLE_DISC	4	static
-../Core/Src/mycode.c:99:6:handle_BLE_CONN	4	static
+../Core/Src/mycode.c:35:6:process_trame	24	static
+../Core/Src/mycode.c:53:6:handle_BLE_DISC	4	static
+../Core/Src/mycode.c:57:6:handle_BLE_CONN	4	static

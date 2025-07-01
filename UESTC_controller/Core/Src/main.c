@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,16 +47,16 @@ DMA_HandleTypeDef hdma_adc1;
 TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart1;
-DMA_HandleTypeDef hdma_usart1_rx;
 
 /* USER CODE BEGIN PV */
 
 uint16_t adcData[ADC_NUM_CONVERSIONS];
 int gpioData[GPIO_NUM_CONVERSIONS];
 
-uint8_t rx_dma_buffer[RX_BUFFER_SIZE];
-char receive_buffer[RX_BUFFER_SIZE];
+uint8_t rx_it_buffer;
 char transmit_buffer[RX_BUFFER_SIZE];
+char receive_buffer[RX_BUFFER_SIZE];
+char receive_buffer_copy[RX_BUFFER_SIZE];
 
 
 /* USER CODE END PV */
@@ -116,9 +117,8 @@ int main(void)
   HAL_TIM_Base_Start(&htim3); // demarer timer 3
 
   //Config de l'USART1 pour le BLE RX
-  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t*) &rx_dma_buffer, (uint16_t) RX_BUFFER_SIZE); // Envoie une interruption quand le buffer est rempli ou quand il n'y a plus de caractère reçu
-  //interruption traitée dans HAL_UARTEx_RxEventCallback
-
+  HAL_UART_Receive_IT(&huart1, &rx_it_buffer, 1);
+  // chaque caractère va être écrit dans le buff et une interruption sera envoyée à HAL_UART_RxCpltCallback
   //Config de l'USART1 pour le BLE TX
 
 
@@ -343,9 +343,6 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-  /* DMA1_Channel5_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 
 }
 
@@ -400,19 +397,42 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+	static int receive_index = 0;
+	static bool debut_de_trame = false;
+	static bool fin_de_trame = false;
+    if (huart->Instance == USART1) {
+        // Copier le caractère dans le buffer
+        if (receive_index < sizeof(receive_buffer) - 1) {
+            receive_buffer[receive_index++] = (char)rx_it_buffer;
+            if((char)rx_it_buffer == '\n'){
+            	if (!debut_de_trame){
+            		debut_de_trame = true;
+            	}
+            	else{
+            		fin_de_trame = true;
+            	}
 
-// Permet de remettre la position du pointeur du DMA à 0 et de connaître la longueur de la chaine de caractère reçue
-	void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t offset)
-{
-		static uint16_t last_offset = 0;
-		if (offset < last_offset){
-			last_offset = 0;
-		}
-		while(last_offset < offset){
-			process_rx_buffer((char) rx_dma_buffer[last_offset]);
-			++last_offset;
-		}
+            }
+        }
+        // Vérifier si la trame est terminée
+        if (fin_de_trame) {
+            process_trame(receive_buffer);  // traite la trame
+            receive_index = 0;              // réinitialise l'index
+            debut_de_trame = false;
+            fin_de_trame = false;
+            strcpy(receive_buffer, receive_buffer_copy); // DEBUG
+            memset(receive_buffer, 0, sizeof(receive_buffer));
+            rx_it_buffer = 0;
+
+        }
+
+        // Remet à écouter un octet
+        HAL_UART_Receive_IT(&huart1, &rx_it_buffer, 1);
+    }
 }
+
+
 /* USER CODE END 4 */
 
 /**
