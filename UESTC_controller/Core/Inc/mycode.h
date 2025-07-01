@@ -7,9 +7,28 @@
 
 #ifndef INC_MYCODE_H_
 #define INC_MYCODE_H_
+// Defines
+#define huart_BLE huart1
+// Includes
 #include "main.h"
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
 
-//Types
+
+////////////////////////////////////////////////////////////////// CODE RX
+
+//Répertoire des flags
+typedef struct {
+	bool BLE_CONNECTED;
+	bool BLE_REPONDED;
+	bool UNKNOW_COMMAND;
+	bool OK;
+	bool ERR_CMD;
+} SystemFlags;
+
+//Structures
 typedef void (*CommandHandler)(void);
 
 typedef struct {
@@ -18,15 +37,30 @@ typedef struct {
 } CommandEntry;
 
 // Prototypes
-void clear_buffer(uint8_t *buffer, int size);
-void buffer_to_char(uint8_t* buffer, char* char_buff, int max_len);
-void add_char_to_buff(char ch, char* buff);
-void fill_char_buff(char*buff, uint8_t* dma_buff, uint16_t offset);
-void shorten_after_last_crlf(char* str);
-void process_trame(char* receive_buffer);
+void process_trame_rx(char* receive_buffer);
 
+// Prototypes des handles
 void handle_BLE_CONN(void);
 void handle_BLE_DISC(void);
+void handle_OK(void);
+void handle_ERR_CMD(void);
+
+
+
+////////////////////////////////////////////////////////////////// CODE TX
+
+
+//Structures
+typedef struct {
+    void (*ping)(void);
+} BLE_Interface_t;
+
+
+// Prototypes
+
+// Prototypes des fonctions BLE
+void BLE_ping(void);
+
 
 
 #endif /* INC_MYCODE_H_ */

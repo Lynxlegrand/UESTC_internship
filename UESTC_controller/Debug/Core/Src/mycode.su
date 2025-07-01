@@ -1,3 +1,6 @@
-../Core/Src/mycode.c:35:6:process_trame	24	static
-../Core/Src/mycode.c:53:6:handle_BLE_DISC	4	static
-../Core/Src/mycode.c:57:6:handle_BLE_CONN	4	static
+../Core/Src/mycode.c:27:6:handle_BLE_DISC	4	static
+../Core/Src/mycode.c:31:6:handle_BLE_CONN	4	static
+../Core/Src/mycode.c:35:6:handle_OK	4	static
+../Core/Src/mycode.c:39:6:handle_ERR_CMD	4	static
+../Core/Src/mycode.c:46:6:process_trame_rx	24	static
+../Core/Src/mycode.c:75:6:BLE_ping	16	static

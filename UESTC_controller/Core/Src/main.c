@@ -21,7 +21,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,9 +53,8 @@ uint16_t adcData[ADC_NUM_CONVERSIONS];
 int gpioData[GPIO_NUM_CONVERSIONS];
 
 uint8_t rx_it_buffer;
-char transmit_buffer[RX_BUFFER_SIZE];
 char receive_buffer[RX_BUFFER_SIZE];
-char receive_buffer_copy[RX_BUFFER_SIZE];
+char unknow_command[RX_BUFFER_SIZE];
 
 
 /* USER CODE END PV */
@@ -111,15 +109,28 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
+
+
+
+
   // CALIBRATION DES ADCs
   HAL_ADCEx_Calibration_Start(&hadc1); // Calibrer ADC1 => CF drivers hal_adc
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adcData, ADC_NUM_CONVERSIONS); // configurer DMA
   HAL_TIM_Base_Start(&htim3); // demarer timer 3
 
   //Config de l'USART1 pour le BLE RX
-  HAL_UART_Receive_IT(&huart1, &rx_it_buffer, 1);
+  HAL_UART_Receive_IT(&huart_BLE, &rx_it_buffer, 1);
   // chaque caractère va être écrit dans le buff et une interruption sera envoyée à HAL_UART_RxCpltCallback
   //Config de l'USART1 pour le BLE TX
+
+
+  //TEST
+  char transmit_buffer[] = "eeeAT\r\n";
+  HAL_UART_Transmit(&huart_BLE, (uint8_t*)transmit_buffer, strlen(transmit_buffer), HAL_MAX_DELAY);
+
+
+
+
 
 
   /* USER CODE END 2 */
@@ -128,6 +139,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -397,6 +409,12 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+
+
+
+
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	static int receive_index = 0;
 	static bool debut_de_trame = false;
@@ -417,20 +435,27 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         }
         // Vérifier si la trame est terminée
         if (fin_de_trame) {
-            process_trame(receive_buffer);  // traite la trame
+        	process_trame_rx(receive_buffer);  // traite la trame
             receive_index = 0;              // réinitialise l'index
             debut_de_trame = false;
             fin_de_trame = false;
-            strcpy(receive_buffer, receive_buffer_copy); // DEBUG
+            strncpy(receive_buffer, unknow_command, sizeof(receive_buffer) - 1); // DEBUG
             memset(receive_buffer, 0, sizeof(receive_buffer));
             rx_it_buffer = 0;
 
         }
 
         // Remet à écouter un octet
-        HAL_UART_Receive_IT(&huart1, &rx_it_buffer, 1);
+        HAL_UART_Receive_IT(&huart_BLE, &rx_it_buffer, 1);
     }
 }
+
+
+
+
+
+
+
 
 
 /* USER CODE END 4 */

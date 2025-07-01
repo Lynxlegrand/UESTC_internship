@@ -32,7 +32,6 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "mycode.h"
-#include <string.h> // pour memset
 
 /* USER CODE END Includes */
 
