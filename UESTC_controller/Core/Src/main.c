@@ -53,10 +53,6 @@ uint16_t adcData[ADC_NUM_CONVERSIONS];
 int gpioData[GPIO_NUM_CONVERSIONS];
 
 uint8_t rx_it_buffer;
-char receive_buffer[RX_BUFFER_SIZE];
-char unknow_command[RX_BUFFER_SIZE];
-
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -111,8 +107,6 @@ int main(void)
 
 
 
-
-
   // CALIBRATION DES ADCs
   HAL_ADCEx_Calibration_Start(&hadc1); // Calibrer ADC1 => CF drivers hal_adc
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*) adcData, ADC_NUM_CONVERSIONS); // configurer DMA
@@ -121,15 +115,9 @@ int main(void)
   //Config de l'USART1 pour le BLE RX
   HAL_UART_Receive_IT(&huart_BLE, &rx_it_buffer, 1);
   // chaque caractère va être écrit dans le buff et une interruption sera envoyée à HAL_UART_RxCpltCallback
-  //Config de l'USART1 pour le BLE TX
 
-
-  //TEST
-  char transmit_buffer[] = "eeeAT\r\n";
-  HAL_UART_Transmit(&huart_BLE, (uint8_t*)transmit_buffer, strlen(transmit_buffer), HAL_MAX_DELAY);
-
-
-
+  //Config du module BLE
+  config_BLE();
 
 
 
@@ -388,19 +376,19 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI3_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI4_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
@@ -436,12 +424,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         // Vérifier si la trame est terminée
         if (fin_de_trame) {
         	process_trame_rx(receive_buffer);  // traite la trame
+        	memset(receive_buffer, 0, sizeof(receive_buffer));
             receive_index = 0;              // réinitialise l'index
             debut_de_trame = false;
             fin_de_trame = false;
-            strncpy(receive_buffer, unknow_command, sizeof(receive_buffer) - 1); // DEBUG
-            memset(receive_buffer, 0, sizeof(receive_buffer));
             rx_it_buffer = 0;
+
 
         }
 

@@ -1,6 +1,10 @@
-../Core/Src/mycode.c:27:6:handle_BLE_DISC	1
-../Core/Src/mycode.c:31:6:handle_BLE_CONN	1
-../Core/Src/mycode.c:35:6:handle_OK	1
-../Core/Src/mycode.c:39:6:handle_ERR_CMD	1
-../Core/Src/mycode.c:46:6:process_trame_rx	4
-../Core/Src/mycode.c:75:6:BLE_ping	1
+../Core/Src/mycode.c:33:6:handle_BLE_DISC	1
+../Core/Src/mycode.c:37:6:handle_BLE_CONN	1
+../Core/Src/mycode.c:41:6:handle_OK	1
+../Core/Src/mycode.c:45:6:handle_ERR_CMD	1
+../Core/Src/mycode.c:49:6:handle_RSTING	1
+../Core/Src/mycode.c:52:6:handle_CONNECTING	1
+../Core/Src/mycode.c:58:6:process_trame_rx	4
+../Core/Src/mycode.c:83:6:config_BLE	1
+../Core/Src/mycode.c:98:6:wait_until_flag	3
+../Core/Src/mycode.c:117:6:TIMEOUT_ERR_HANDLER	1

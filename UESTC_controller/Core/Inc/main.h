@@ -32,7 +32,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "mycode.h"
-
+#include "ble_td5322a.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -42,10 +42,6 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-#define RX_BUFFER_SIZE 64
-extern char receive_buffer[RX_BUFFER_SIZE];
-extern char transmit_buffer[RX_BUFFER_SIZE];
-
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
