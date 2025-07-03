@@ -11,6 +11,7 @@
 // Includes
 #include "stm32f1xx_hal.h"
 #include "ble_td5322a.h"
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -75,6 +76,20 @@ void config_BLE(void);
 void wait_until_flag(volatile bool* flag, uint32_t timeout_ms);
 void TIMEOUT_ERR_HANDLER(void);
 
+////////////////////////////////////////////////////////////////// CODE TRAME
+#define ADC_NUM_CONVERSIONS 4
+#define GPIO_NUM_CONVERSIONS 5
+
+extern uint16_t adcData[ADC_NUM_CONVERSIONS];
+extern int gpioData[GPIO_NUM_CONVERSIONS];
+extern bool MUST_SEND_TRAME;
+
+void send_trame_if_necessary(void);
+void build_drone_trame(uint8_t* buffer);
+void uint8_to_readable_char(const uint8_t trame[], char trame_char[]);
+
+////////////////////////////////////////////////////////////////// CODE TRAME DECODAGE
+void process_trame(uint8_t* trame);
 
 
 #endif /* INC_MYCODE_H_ */

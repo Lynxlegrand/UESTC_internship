@@ -13,6 +13,7 @@
 #include "string.h"
 #include "stdio.h"
 
+void BLE_SendCommand(const char* cmd);
 
 // Commandes de base
 void BLE_AT(void);
@@ -95,6 +96,8 @@ void BLE_SetAutoConnect(const char* mac);
 typedef struct {
 	// Envoyer command
 	void (*SendCommand)(const char* cmd);
+	// Envoyer trame
+	void (*SendTrame)(const uint8_t* cmd);
     // Commandes de base
     void (*AT)(void);
     void (*Reset)(void);

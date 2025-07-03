@@ -11,8 +11,12 @@
 extern UART_HandleTypeDef huart_BLE;
 
 // Fonction d'envoi générique
-static void BLE_SendCommand(const char* cmd) {
+void BLE_SendCommand(const char* cmd) {
     HAL_UART_Transmit(&huart_BLE, (uint8_t*)cmd, strlen(cmd), HAL_MAX_DELAY);
+}
+
+void BLE_SendTrame(const uint8_t* cmd) {
+    HAL_UART_Transmit(&huart_BLE, cmd, strlen(cmd), HAL_MAX_DELAY);
 }
 
 // Test AT
@@ -306,6 +310,7 @@ void BLE_SetAutoConnect(const char* mac) {
 BLE_Interface_t BLE = {
 	// Envoyer trame
 	.SendCommand         = BLE_SendCommand,
+	.SendTrame           = BLE_SendTrame,
     // Commandes de base
     .AT                  = BLE_AT,
     .Reset               = BLE_Reset,

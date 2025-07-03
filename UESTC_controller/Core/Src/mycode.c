@@ -93,6 +93,7 @@ void config_BLE(void){
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
 	BLE.Reset();                 // Redémarre pour appliquer
 	wait_until_flag(&flags.RSTING,BLE_TIMEOUT_MS);
+	wait_until_flag(&flags.CONNECTING,BLE_TIMEOUT_MS);
 }
 
 void wait_until_flag(volatile bool* flag, uint32_t timeout_ms) {
@@ -111,21 +112,86 @@ void wait_until_flag(volatile bool* flag, uint32_t timeout_ms) {
 }
 
 
-
-
-
 void TIMEOUT_ERR_HANDLER(void){
 	//Ecrire ça plus tard
 }
 
 
+////////////////////////////////////////////////////////////////// CODE TRAME
+
+#define TRAME_SIZE (1 + 2 * ADC_NUM_CONVERSIONS + GPIO_NUM_CONVERSIONS + 1)
+uint16_t adcData[ADC_NUM_CONVERSIONS];
+int gpioData[GPIO_NUM_CONVERSIONS];
+
+#define HEADER_BYTE 0xAA
+#define FOOTER_BYTE 0x55
+
+bool MUST_SEND_TRAME = false;
+uint8_t trame[TRAME_SIZE];
+
+void send_trame_if_necessary(void){
+	if(flags.BLE_CONNECTED && MUST_SEND_TRAME){
+		build_drone_trame(trame);
+		process_trame(trame); //debug
+		BLE.SendTrame(trame);
+		MUST_SEND_TRAME = false;
+	}
+}
+
+void build_drone_trame(uint8_t* buffer) {			//code la trame (plus opti que du texte : taille trame constante et rapidité)
+    uint8_t idx = 0;
+
+    buffer[idx++] = HEADER_BYTE;  // Header (convention)
+
+    // ADC data (2 octets chacun)
+    for (int i = 0; i < ADC_NUM_CONVERSIONS; i++) {
+        buffer[idx++] = (adcData[i] >> 8) & 0xFF;  // MSB
+        buffer[idx++] = adcData[i] & 0xFF;         // LSB
+    }
+
+    // GPIO data (1 octet chacun)
+    for (int i = 0; i < GPIO_NUM_CONVERSIONS; i++) {
+        buffer[idx++] = gpioData[i] ? 1 : 0;
+    }
+
+    buffer[idx++] = FOOTER_BYTE;  // Footer (convention)
+}
+
+
+
+void uint8_to_readable_char(const uint8_t trame[], char trame_char[]) {
+    for (int i = 0; i < TRAME_SIZE; i++) {
+        if (isprint(trame[i])) {
+            trame_char[i] = (char)trame[i];  // Caractère lisible
+        } else {
+            trame_char[i] = '.';             // Remplacement des caractères non imprimables
+        }
+    }
+}
 
 
 
 
+////////////////////////////////////////////////////////////////// CODE TRAME DECODAGE
 
 
+uint16_t adcData_2[ADC_NUM_CONVERSIONS];
+int gpioData_2[GPIO_NUM_CONVERSIONS];
 
+void process_trame(uint8_t* trame) {
+    if (trame[0] != HEADER_BYTE || trame[TRAME_SIZE - 1] != FOOTER_BYTE)
+        return;
 
+    uint8_t idx = 1;  // On saute le header
 
+    for (int i = 0; i < ADC_NUM_CONVERSIONS; i++) {
+        uint16_t value = (trame[idx] << 8) | trame[idx + 1];
+        adcData_2[i] = value;
+        idx += 2;
+    }
+
+    for (int i = 0; i < GPIO_NUM_CONVERSIONS; i++) {
+        gpioData_2[i] = trame[idx++];
+    }
+}
 
