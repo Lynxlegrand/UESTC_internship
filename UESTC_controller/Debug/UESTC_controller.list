@@ -132,7 +132,7 @@ void BLE_SendTrame(const uint8_t* cmd) {
  800019e:	b082      	sub	sp, #8
  80001a0:	af00      	add	r7, sp, #0
  80001a2:	6078      	str	r0, [r7, #4]
-    HAL_UART_Transmit(&huart_BLE, cmd, strlen(cmd), HAL_MAX_DELAY);
+    HAL_UART_Transmit(&huart_BLE, cmd, strlen((const char*)cmd), HAL_MAX_DELAY);
  80001a4:	6878      	ldr	r0, [r7, #4]
  80001a6:	f7ff ffdb 	bl	8000160 <strlen>
  80001aa:	4603      	mov	r3, r0
