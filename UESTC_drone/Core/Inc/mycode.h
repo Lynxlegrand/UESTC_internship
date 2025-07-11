@@ -10,20 +10,23 @@
 
 // Includes
 #include "stm32f1xx_hal.h"
-#include "ble_td5322a.h"
+#include "ble_td5322a.h" //le AC6328A est déjà programmé et utilise les mêmes commandes AT
+#include "DC_motor.h"
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 
-////////////////////////////////////////////////////////////////// DEFINE ET PARAMETRAGE
-#define huart_BLE huart1
-#define BLE_ROLE 1
-#define BLE_UUID "FF00"
-#define BLE_MAC_DRONE "AABBCCDDEEFF"		//connection auto
-#define NOM_DE_LA_MANETTE "Manette_HUGO"
-#define BLE_TIMEOUT_MS 1000  // 1 seconde max
+//////////////////////////////////////////////////////////////////
+/// PARAMÉTRAGE POUR LE DRONE (Peripheral)
+
+#define huart_BLE huart1            // UART utilisé pour le BLE
+#define BLE_ROLE 0                  // 0 = Peripheral
+#define BLE_UUID "FF00"             // UUID du service BLE
+#define BLE_MAC_MANETTE "AABBCCDDEEFF" // Optionnel côté drone
+#define NOM_DU_DRONE "Drone_HUGO"   // Nom diffusé dans l’advertising
+#define BLE_TIMEOUT_MS 1000         // Timeout de 1s pour réception AT
 
 ////////////////////////////////////////////////////////////////// CODE RX
 // BUFFERS

@@ -81,12 +81,15 @@ bool flag_timeout_err = false;
 
 // config du module BLE
 void config_BLE(void){
+	BLE.Reset();                 // Redémarre pour appliquer
+	wait_until_flag(&flags.RSTING,BLE_TIMEOUT_MS);
 	BLE.EnterATMode();           // AT>9
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
 	BLE.SetRole(BLE_ROLE);              // CLIENT
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
 	BLE.SetTargetUUID(BLE_UUID);   // UUID du service du drone
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
+	BLE.
 	BLE.SetAutoConnect(BLE_MAC_DRONE);  // MAC du drone
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
 	BLE.SetName(NOM_DE_LA_MANETTE);

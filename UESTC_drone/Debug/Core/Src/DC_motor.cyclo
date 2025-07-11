@@ -1,0 +1,4 @@
+../Core/Src/DC_motor.c:29:6:DC_Motor_Init	2
+../Core/Src/DC_motor.c:41:6:DC_Motor_SetDuty	9
+../Core/Src/DC_motor.c:59:6:DC_Motor_StartRamp	4
+../Core/Src/DC_motor.c:75:6:DC_Motor_RampTick	8
