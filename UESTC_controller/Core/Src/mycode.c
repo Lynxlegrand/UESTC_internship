@@ -20,13 +20,13 @@ SystemFlags flags = {0};
 // Dictionnaires
 #define COMMAND_COUNT_RX 7
 CommandEntry command_table_rx[COMMAND_COUNT_RX] = {
-    {"\r\nBLE_DISC\r\n", handle_BLE_DISC},
-	{"\r\nOK\r\n", handle_OK},
-	{"\r\nERR_CMD\r\n", handle_ERR_CMD},
-	{"+\r\nRESETTING!\r\n", handle_RSTING},			//c'est pas joli mais ça marche
-	{"\r\nCONNECTING......\r\n", handle_CONNECTING},
-	{"\r\nRESTORING......\r\n", handle_RESTORING},
-    {"\r\nBLE_CONN\r\n", handle_BLE_CONN}
+    {"BLE_DISC\r\n", handle_BLE_DISC},			//NB : les trammes réelles commencent et se terminent toutes par \r\n
+	{"OK\r\n", handle_OK},
+	{"ERR_CMD\r\n", handle_ERR_CMD},
+	{"RESETTING!\r\n", handle_RSTING},
+	{"CONNECTING......\r\n", handle_CONNECTING},
+	{"RESTORING......\r\n", handle_RESTORING},
+    {"BLE_CONN\r\n", handle_BLE_CONN}
 };
 
 // Handles

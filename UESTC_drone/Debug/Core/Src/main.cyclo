@@ -7,5 +7,5 @@
 ../Core/Src/main.c:371:13:MX_TIM4_Init	4
 ../Core/Src/main.c:420:13:MX_USART1_UART_Init	2
 ../Core/Src/main.c:453:13:MX_GPIO_Init	1
-../Core/Src/main.c:474:6:HAL_UART_RxCpltCallback	6
-../Core/Src/main.c:517:6:Error_Handler	1
+../Core/Src/main.c:474:6:HAL_UART_RxCpltCallback	7
+../Core/Src/main.c:520:6:Error_Handler	1

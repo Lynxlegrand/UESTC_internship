@@ -452,7 +452,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == USART1) {
         // Copier le caractère dans le buffer
         if (receive_index < sizeof(receive_buffer) - 1) {
+        	if(debut_de_trame){						//debug
             receive_buffer[receive_index++] = (char)rx_it_buffer;
+        	}
             if((char)rx_it_buffer == '\n'){
             	if (!debut_de_trame){
             		debut_de_trame = true;
