@@ -33,10 +33,13 @@ CommandEntry command_table_rx[COMMAND_COUNT_RX] = {
 
 void handle_BLE_DISC(void){
 	flags.BLE_CONNECTED = false;
+	flags.BLE_HAS_BEEN_DISCONNECTED = true;
+
 }
 
 void handle_BLE_CONN(void){
 	flags.BLE_CONNECTED = true;
+	flags.BLE_HAS_BEEN_DISCONNECTED = false;
 }
 
 void handle_OK(void){
@@ -53,10 +56,10 @@ void handle_RSTING(void){
 void handle_CONNECTING(void){
 	flags.CONNECTING = true;
 }
-
 void handle_RESTORING(void){
 	flags.RESTORING = true;
 }
+
 
 
 // fonctions
@@ -100,8 +103,6 @@ void config_BLE(void){
 	wait_until_flag(&flags.RSTING,BLE_TIMEOUT_MS);
 }
 
-
-
 void wait_until_flag(volatile bool* flag, uint32_t timeout_ms) {
     uint32_t start = HAL_GetTick();
 
@@ -138,7 +139,6 @@ uint8_t trame[TRAME_SIZE];
 void send_trame_if_necessary(void){
 	if(flags.BLE_CONNECTED && MUST_SEND_TRAME){
 		build_drone_trame(trame);
-		process_trame(trame); //debug
 		BLE.SendTrame(trame);
 		MUST_SEND_TRAME = false;
 	}
@@ -157,7 +157,10 @@ void build_drone_trame(uint8_t* buffer) {			//code la trame (plus opti que du te
 
     // GPIO data (1 octet chacun)
     for (int i = 0; i < GPIO_NUM_CONVERSIONS; i++) {
-        buffer[idx++] = gpioData[i] ? 1 : 0;
+        buffer[idx++] = gpioData[i];
+        if (gpioData[i]!=0){
+        	gpioData[i]=0;
+        }
     }
 
     buffer[idx++] = FOOTER_BYTE;  // Footer (convention)
