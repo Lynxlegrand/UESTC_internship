@@ -18,13 +18,14 @@ char unknow_command[RX_BUFFER_SIZE];
 SystemFlags flags = {0};
 
 // Dictionnaires
-#define COMMAND_COUNT_RX 6
+#define COMMAND_COUNT_RX 7
 CommandEntry command_table_rx[COMMAND_COUNT_RX] = {
     {"\r\nBLE_DISC\r\n", handle_BLE_DISC},
 	{"\r\nOK\r\n", handle_OK},
 	{"\r\nERR_CMD\r\n", handle_ERR_CMD},
 	{"\r\nRESETTING!\r\n", handle_RSTING},
 	{"\r\nCONNECTING......\r\n", handle_CONNECTING},
+	{"\r\nRESTORING......\r\n", handle_RESTORING},
     {"\r\nBLE_CONN\r\n", handle_BLE_CONN}
 };
 
@@ -51,6 +52,10 @@ void handle_RSTING(void){
 }
 void handle_CONNECTING(void){
 	flags.CONNECTING = true;
+}
+
+void handle_RESTORING(void){
+	flags.RESTORING = true;
 }
 
 
@@ -81,23 +86,21 @@ bool flag_timeout_err = false;
 
 // config du module BLE
 void config_BLE(void){
-	BLE.Reset();                 // Redémarre pour appliquer
-	wait_until_flag(&flags.RSTING,BLE_TIMEOUT_MS);
-	BLE.EnterATMode();           // AT>9
+	BLE.RestoreDefaults();
+	wait_until_flag(&flags.RESTORING,BLE_TIMEOUT_MS);
+	BLE.SetRole(BLE_ROLE);
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
-	BLE.SetRole(BLE_ROLE);              // CLIENT
+	BLE.SetBLEMAC(BLE_MAC_SERVEUR);
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
-	BLE.SetTargetUUID(BLE_UUID);   // UUID du service du drone
+	BLE.SetName(NAME);
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
-	BLE.
-	BLE.SetAutoConnect(BLE_MAC_DRONE);  // MAC du drone
-	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
-	BLE.SetName(NOM_DE_LA_MANETTE);
+	BLE.SetSecurity(SECURITY);
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
 	BLE.Reset();                 // Redémarre pour appliquer
 	wait_until_flag(&flags.RSTING,BLE_TIMEOUT_MS);
-	wait_until_flag(&flags.CONNECTING,BLE_TIMEOUT_MS);
 }
+
+
 
 void wait_until_flag(volatile bool* flag, uint32_t timeout_ms) {
     uint32_t start = HAL_GetTick();

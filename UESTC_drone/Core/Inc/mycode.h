@@ -22,10 +22,11 @@
 /// PARAMÉTRAGE POUR LE DRONE (Peripheral)
 
 #define huart_BLE huart1            // UART utilisé pour le BLE
-#define BLE_ROLE 0                  // 0 = Peripheral
-#define BLE_UUID "FF00"             // UUID du service BLE
-#define BLE_MAC_MANETTE "AABBCCDDEEFF" // Optionnel côté drone
-#define NOM_DU_DRONE "Drone_HUGO"   // Nom diffusé dans l’advertising
+#define BLE_ROLE 0                  // 0 = serveur
+#define BLE_UUID "FF02"             // UUID du service BLE (optionnel)
+#define BLE_MAC_SERVEUR "e73bbbee45c9" // A définir pour le BLE, jsp pk
+#define NAME "Drone_HUGO"   // Nom diffusé dans l’advertising
+#define SECURITY 0
 #define BLE_TIMEOUT_MS 1000         // Timeout de 1s pour réception AT
 
 ////////////////////////////////////////////////////////////////// CODE RX
@@ -44,6 +45,7 @@ typedef struct {
 	bool ERR_CMD;
 	bool RSTING;
 	bool CONNECTING;
+	bool RESTORING;
 } SystemFlags;
 
 extern SystemFlags flags;
@@ -65,6 +67,7 @@ void handle_OK(void);
 void handle_ERR_CMD(void);
 void handle_RSTING(void);
 void handle_CONNECTING(void);
+void handle_RESTORING(void);
 
 
 

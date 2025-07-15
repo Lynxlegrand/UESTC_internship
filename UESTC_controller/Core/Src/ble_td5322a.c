@@ -64,7 +64,7 @@ void BLE_ReadRole(void) {
 // Définir rôle (0 = slave, 1 = master)
 void BLE_SetRole(uint8_t role) {
     char cmd[32];
-    snprintf(cmd, sizeof(cmd), "AT+ROLE=%d\r\n", role);
+    snprintf(cmd, sizeof(cmd), "AT+ROLE=%d\r\n", (char)role);
     BLE_SendCommand(cmd);
 }
 
@@ -78,7 +78,7 @@ void BLE_SetPIN(const char* pin6digits) {
 // Définir le niveau de sécurité
 void BLE_SetSecurity(uint8_t level) {
     char cmd[32];
-    snprintf(cmd, sizeof(cmd), "AT+SECURITY=%d\r\n", level);
+    snprintf(cmd, sizeof(cmd), "AT+SECURITY=%d\r\n", (char)level);
     BLE_SendCommand(cmd);
 }
 
@@ -105,7 +105,7 @@ void BLE_EnterBLEMode(void) {
 // Activer/désactiver le log
 void BLE_SetLog(uint8_t enable) {
     char cmd[32];
-    snprintf(cmd, sizeof(cmd), "AT+LOG=%d\r\n", enable);
+    snprintf(cmd, sizeof(cmd), "AT+LOG=%d\r\n", (char)enable);
     BLE_SendCommand(cmd);
 }
 
@@ -117,7 +117,7 @@ void BLE_ReadLog(void) {
 // Réglage LED d’état
 void BLE_SetLED(uint8_t mode) {
     char cmd[32];
-    snprintf(cmd, sizeof(cmd), "AT+LED=%d\r\n", mode);
+    snprintf(cmd, sizeof(cmd), "AT+LED=%d\r\n", (char)mode);
     BLE_SendCommand(cmd);
 }
 
@@ -129,7 +129,7 @@ void BLE_ReadLED(void) {
 // Définir puissance d’émission (0 à 9)
 void BLE_SetRFPower(uint8_t level) {
     char cmd[32];
-    snprintf(cmd, sizeof(cmd), "AT+RFPWR=%d\r\n", level);
+    snprintf(cmd, sizeof(cmd), "AT+RFPWR=%d\r\n", (char)level);
     BLE_SendCommand(cmd);
 }
 
@@ -141,7 +141,7 @@ void BLE_ReadUUID(void) {
 // Modifier UUID d’un service ou caractéristique
 void BLE_SetUUID(uint8_t index, const char* uuid) {
     char cmd[128];
-    snprintf(cmd, sizeof(cmd), "AT+UUID=%d,%s\r\n", index, uuid);
+    snprintf(cmd, sizeof(cmd), "AT+UUID=%d,%s\r\n", (char)index, (char)uuid);
     BLE_SendCommand(cmd);
     BLE_Reset();  // UUID settings require reboot
 }
@@ -166,21 +166,21 @@ void BLE_ReadAdvInterval(void) {
 // Définir intervalle broadcast (10~4000 ms)
 void BLE_SetAdvInterval(uint16_t interval_ms) {
     char cmd[64];
-    snprintf(cmd, sizeof(cmd), "AT+ADVPARAM=%d\r\n", interval_ms);
+    snprintf(cmd, sizeof(cmd), "AT+ADVPARAM=%d\r\n", (char)interval_ms);
     BLE_SendCommand(cmd);
 }
 
 // Activer/désactiver le broadcast
 void BLE_SetBroadcast(uint8_t enable) {
     char cmd[32];
-    snprintf(cmd, sizeof(cmd), "AT+ADV=%d\r\n", enable);
+    snprintf(cmd, sizeof(cmd), "AT+ADV=%d\r\n", (char)enable);
     BLE_SendCommand(cmd);
 }
 
 // Activer ou désactiver le mode low power
 void BLE_SetLowPowerMode(uint8_t enable) {
     char cmd[32];
-    snprintf(cmd, sizeof(cmd), "AT+LPM=%d\r\n", enable);
+    snprintf(cmd, sizeof(cmd), "AT+LPM=%d\r\n", (char)enable);
     BLE_SendCommand(cmd);
 }
 
@@ -204,7 +204,7 @@ void BLE_ConnectTo(const char* mac_addr) {
 // Déconnexion (nécessite d’abord AT>9)
 void BLE_Disconnect(uint8_t mode) {
     char cmd[32];
-    snprintf(cmd, sizeof(cmd), "AT+DISC=%d\r\n", mode);
+    snprintf(cmd, sizeof(cmd), "AT+DISC=%d\r\n", (char)mode);
     BLE_SendCommand(cmd);
 }
 
@@ -220,7 +220,7 @@ void BLE_ReadBaudrate(void) {
 // Définir le baudrate (ex: 9600, 115200, etc.)
 void BLE_SetBaudrate(uint32_t baudrate) {
     char cmd[32];
-    snprintf(cmd, sizeof(cmd), "AT+BAUD=%lu\r\n", baudrate);
+    snprintf(cmd, sizeof(cmd), "AT+BAUD=%lu\r\n", (char)baudrate);
     BLE_SendCommand(cmd);
 }
 
@@ -232,7 +232,7 @@ void BLE_ReadMode(void) {
 // Définir le mode BLE ou BLE+SPP
 void BLE_SetMode(uint8_t mode) {
     char cmd[32];
-    snprintf(cmd, sizeof(cmd), "AT+MODE=%d\r\n", mode);
+    snprintf(cmd, sizeof(cmd), "AT+MODE=%d\r\n", (char)mode);
     BLE_SendCommand(cmd);
 }
 
@@ -282,14 +282,14 @@ void BLE_ScanStart(void) {
 // Configurer paramètres de scan (nombre, timeout)
 void BLE_SetScanLimits(uint8_t count, uint8_t timeout_sec) {
     char cmd[32];
-    snprintf(cmd, sizeof(cmd), "AT+SCANM=%d,%d\r\n", count, timeout_sec);
+    snprintf(cmd, sizeof(cmd), "AT+SCANM=%d,%d\r\n", (char)count, (char)timeout_sec);
     BLE_SendCommand(cmd);
 }
 
 // Configurer scan params (mode, interval, window)
 void BLE_SetScanParams(uint8_t active, uint8_t interval, uint8_t window) {
     char cmd[64];
-    snprintf(cmd, sizeof(cmd), "AT+SCANPARAM=%d,%d,%d\r\n", active, interval, window);
+    snprintf(cmd, sizeof(cmd), "AT+SCANPARAM=%d,%d,%d\r\n", (char)active, (char)interval, (char)window);
     BLE_SendCommand(cmd);
 }
 

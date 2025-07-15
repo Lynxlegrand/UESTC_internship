@@ -121,15 +121,12 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim4);
 
 
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  flags.BLE_CONNECTED = true; //debug
-	  MUST_SEND_TRAME = true; //debug
 	  send_trame_if_necessary();
 
     /* USER CODE END WHILE */

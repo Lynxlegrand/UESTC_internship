@@ -19,10 +19,10 @@
 
 ////////////////////////////////////////////////////////////////// DEFINE ET PARAMETRAGE
 #define huart_BLE huart1
-#define BLE_ROLE 1
-#define BLE_UUID "FF00"
-#define BLE_MAC_DRONE "AABBCCDDEEFF"		//connection auto
-#define NOM_DE_LA_MANETTE "Manette_HUGO"
+#define BLE_ROLE 1 //client maitre
+#define BLE_UUID "FF02"
+#define BLE_MAC_SERVEUR "e73bbbee45c9"		//connection auto
+#define NAME "Manette_HUGO"
 #define BLE_TIMEOUT_MS 1000  // 1 seconde max
 
 ////////////////////////////////////////////////////////////////// CODE RX
@@ -41,6 +41,7 @@ typedef struct {
 	bool ERR_CMD;
 	bool RSTING;
 	bool CONNECTING;
+	bool RESTORING;
 } SystemFlags;
 
 extern SystemFlags flags;
@@ -62,7 +63,7 @@ void handle_OK(void);
 void handle_ERR_CMD(void);
 void handle_RSTING(void);
 void handle_CONNECTING(void);
-
+void handle_RESTORING(void);
 
 
 ////////////////////////////////////////////////////////////////// CODE TX

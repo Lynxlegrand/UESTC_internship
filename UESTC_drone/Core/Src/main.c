@@ -111,9 +111,8 @@ int main(void)
   // chaque caractère va être écrit dans le buff et une interruption sera envoyée à HAL_UART_RxCpltCallback
 
   //Config du module BLE
-  //config_BLE();
-  BLE_SendCommand("hello");
-
+  config_BLE();
+  //BLE.ReadSPPMAC();
   /* USER CODE END 2 */
 
   /* Infinite loop */

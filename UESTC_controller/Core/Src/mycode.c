@@ -18,13 +18,14 @@ char unknow_command[RX_BUFFER_SIZE];
 SystemFlags flags = {0};
 
 // Dictionnaires
-#define COMMAND_COUNT_RX 6
+#define COMMAND_COUNT_RX 7
 CommandEntry command_table_rx[COMMAND_COUNT_RX] = {
     {"\r\nBLE_DISC\r\n", handle_BLE_DISC},
 	{"\r\nOK\r\n", handle_OK},
 	{"\r\nERR_CMD\r\n", handle_ERR_CMD},
-	{"\r\nRESETTING!\r\n", handle_RSTING},
+	{"+\r\nRESETTING!\r\n", handle_RSTING},			//c'est pas joli mais ça marche
 	{"\r\nCONNECTING......\r\n", handle_CONNECTING},
+	{"\r\nRESTORING......\r\n", handle_RESTORING},
     {"\r\nBLE_CONN\r\n", handle_BLE_CONN}
 };
 
@@ -52,6 +53,10 @@ void handle_RSTING(void){
 void handle_CONNECTING(void){
 	flags.CONNECTING = true;
 }
+void handle_RESTORING(void){
+	flags.RESTORING = true;
+}
+
 
 
 // fonctions
@@ -81,19 +86,18 @@ bool flag_timeout_err = false;
 
 // config du module BLE
 void config_BLE(void){
-	BLE.EnterATMode();           // AT>9
+	BLE.RestoreDefaults();
+	wait_until_flag(&flags.RESTORING,BLE_TIMEOUT_MS);
+	BLE.SetName(NAME);
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
-	BLE.SetRole(BLE_ROLE);              // CLIENT
+	BLE.SetRole(BLE_ROLE);
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
-	BLE.SetTargetUUID(BLE_UUID);   // UUID du service du drone
+	BLE.SetAutoConnect(BLE_MAC_SERVEUR);  // MAC du drone
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
-	BLE.SetAutoConnect(BLE_MAC_DRONE);  // MAC du drone
-	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
-	BLE.SetName(NOM_DE_LA_MANETTE);
+	BLE.ScanStart();
 	wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
 	BLE.Reset();                 // Redémarre pour appliquer
 	wait_until_flag(&flags.RSTING,BLE_TIMEOUT_MS);
-	wait_until_flag(&flags.CONNECTING,BLE_TIMEOUT_MS);
 }
 
 void wait_until_flag(volatile bool* flag, uint32_t timeout_ms) {
@@ -132,7 +136,6 @@ uint8_t trame[TRAME_SIZE];
 void send_trame_if_necessary(void){
 	if(flags.BLE_CONNECTED && MUST_SEND_TRAME){
 		build_drone_trame(trame);
-		process_trame(trame); //debug
 		BLE.SendTrame(trame);
 		MUST_SEND_TRAME = false;
 	}
@@ -151,7 +154,10 @@ void build_drone_trame(uint8_t* buffer) {			//code la trame (plus opti que du te
 
     // GPIO data (1 octet chacun)
     for (int i = 0; i < GPIO_NUM_CONVERSIONS; i++) {
-        buffer[idx++] = gpioData[i] ? 1 : 0;
+        buffer[idx++] = gpioData[i];
+        if (gpioData[i]!=0){
+        	gpioData[i]=0;
+        }
     }
 
     buffer[idx++] = FOOTER_BYTE;  // Footer (convention)
