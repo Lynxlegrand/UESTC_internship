@@ -33,10 +33,13 @@ CommandEntry command_table_rx[COMMAND_COUNT_RX] = {
 
 void handle_BLE_DISC(void){
 	flags.BLE_CONNECTED = false;
+	flags.BLE_HAS_BEEN_DISCONNECTED = true;
+
 }
 
 void handle_BLE_CONN(void){
 	flags.BLE_CONNECTED = true;
+	flags.BLE_HAS_BEEN_DISCONNECTED = false;
 }
 
 void handle_OK(void){

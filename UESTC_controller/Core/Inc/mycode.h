@@ -42,6 +42,7 @@ typedef struct {
 	bool RSTING;
 	bool CONNECTING;
 	bool RESTORING;
+	bool BLE_HAS_BEEN_DISCONNECTED;
 } SystemFlags;
 
 extern SystemFlags flags;

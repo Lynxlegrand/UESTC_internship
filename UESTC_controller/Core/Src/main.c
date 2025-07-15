@@ -127,8 +127,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  send_trame_if_necessary();
-
+	if(flags.BLE_HAS_BEEN_DISCONNECTED){
+		BLE.Reset(); //J'utilise l'autoconnect
+		wait_until_flag(&flags.RSTING,BLE_TIMEOUT_MS);
+		flags.BLE_HAS_BEEN_DISCONNECTED = false;
+	}
+	send_trame_if_necessary();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
