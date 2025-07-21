@@ -115,7 +115,7 @@ int main(void)
   // chaque caractère va être écrit dans le buff et une interruption sera envoyée à HAL_UART_RxCpltCallback
 
   //Config du module BLE
-  config_BLE();
+  config_BLE_manette();
 
   //Timer pour envoyer la trame
   HAL_TIM_Base_Start_IT(&htim4);
@@ -128,11 +128,16 @@ int main(void)
   while (1)
   {
 	if(flags.BLE_HAS_BEEN_DISCONNECTED){
-		BLE.Reset(); //J'utilise l'autoconnect
-		wait_until_flag(&flags.RSTING,BLE_TIMEOUT_MS);
+	    BLE.EnterATMode();
+	    wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
+		BLE.SetAutoConnect(BLE_MAC_SERVEUR);  // MAC du drone
+		wait_until_flag(&flags.OK,BLE_TIMEOUT_MS);
+	    BLE.Reset();  // relance tentative
+	    wait_until_flag(&flags.RSTING,BLE_TIMEOUT_MS);
 		flags.BLE_HAS_BEEN_DISCONNECTED = false;
 	}
 	send_trame_if_necessary();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -477,10 +482,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             debut_de_trame = false;
             fin_de_trame = false;
             rx_it_buffer = 0;
-
-
         }
-
         // Remet à écouter un octet
         HAL_UART_Receive_IT(&huart_BLE, &rx_it_buffer, 1);
     }

@@ -1,3 +1,4 @@
+
 /*
  * mycode.h
  *
@@ -16,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+//#include "DC_motor.h"
 
 ////////////////////////////////////////////////////////////////// DEFINE ET PARAMETRAGE
 #define huart_BLE huart1
@@ -24,6 +26,16 @@
 #define BLE_MAC_SERVEUR "e73bbbee45c9"		//connection auto
 #define NAME "Manette_HUGO"
 #define BLE_TIMEOUT_MS 1000  // 1 seconde max
+
+///// PARAMÉTRAGE POUR LE DRONE (Peripheral)
+//
+//#define huart_BLE huart1            // UART utilisé pour le BLE
+//#define BLE_ROLE 0                  // 0 = serveur
+//#define BLE_UUID "FF02"             // UUID du service BLE (optionnel)
+//#define BLE_MAC_SERVEUR "e73bbbee45c9" // A définir pour le BLE, jsp pk
+//#define NAME "Drone_HUGO"   // Nom diffusé dans l’advertising
+//#define SECURITY 0
+//#define BLE_TIMEOUT_MS 1000         // Timeout de 1s pour réception AT
 
 ////////////////////////////////////////////////////////////////// CODE RX
 // BUFFERS
@@ -75,6 +87,8 @@ extern bool flag_timeout_err;
 
 // Prototypes
 void config_BLE(void);
+void config_BLE_manette(void);
+void config_BLE_drone(void);
 void wait_until_flag(volatile bool* flag, uint32_t timeout_ms);
 void TIMEOUT_ERR_HANDLER(void);
 
@@ -89,9 +103,12 @@ extern bool MUST_SEND_TRAME;
 void send_trame_if_necessary(void);
 void build_drone_trame(uint8_t* buffer);
 void uint8_to_readable_char(const uint8_t trame[], char trame_char[]);
+void build_drone_trame_char(char* buffer, size_t buffer_size);
 
 ////////////////////////////////////////////////////////////////// CODE TRAME DECODAGE
 void process_trame(uint8_t* trame);
+#define HEADER_BYTE 0xAA
+#define FOOTER_BYTE 0x7E
 
 
 #endif /* INC_MYCODE_H_ */

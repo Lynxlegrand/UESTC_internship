@@ -111,7 +111,7 @@ int main(void)
   // chaque caractère va être écrit dans le buff et une interruption sera envoyée à HAL_UART_RxCpltCallback
 
   //Config du module BLE
-  config_BLE();
+  config_BLE_drone();
   //BLE.ReadSPPMAC();
   /* USER CODE END 2 */
 
@@ -119,6 +119,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  for(int i=0;i<GPIO_NUM_CONVERSIONS;i++){ //debug
+		  if(gpioData_2[i]==1){
+			  gpioData_2[i] =0;
+		  }
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -470,7 +475,6 @@ static void MX_GPIO_Init(void)
 
 ////////////////////////////////////////////////////////////////// CODE RX
 
-
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	static int receive_index = 0;
 	static bool debut_de_trame = false;
@@ -499,14 +503,84 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             debut_de_trame = false;
             fin_de_trame = false;
             rx_it_buffer = 0;
-
-
         }
-
         // Remet à écouter un octet
         HAL_UART_Receive_IT(&huart_BLE, &rx_it_buffer, 1);
     }
 }
+
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+//    static int receive_index = 0;
+//    static bool debut_de_trame = false;
+//    static bool fin_de_trame = false;
+//    static bool command_at = false;
+//    static bool trame_manette = false;
+//
+//    if (huart->Instance == USART1) {
+//        // Ne pas dépasser la taille du buffer
+//        if (receive_index < sizeof(receive_buffer) - 1) {
+//
+//            // Marquage du début de trame manette
+//            if ((uint8_t)rx_it_buffer == HEADER_BYTE && !debut_de_trame) {
+//                trame_manette = true;
+//                debut_de_trame = true;
+//            }
+//
+//            // Marquage de fin de trame manette
+//            if ((uint8_t)rx_it_buffer == FOOTER_BYTE) {
+//                fin_de_trame = true;
+//            }
+//
+//            // Stockage dans le bon buffer
+//            if (debut_de_trame) {
+//                if (trame_manette) {
+//                    receive_buffer_int8[receive_index++] = rx_it_buffer;
+//                }
+//                if (command_at) {
+//                    receive_buffer[receive_index++] = (char)rx_it_buffer;
+//                }
+//            }
+//            // Marquage du début de trame AT
+//            if ((char)rx_it_buffer == '\n') { //je met ça ici pour ne pas tenir compte des premiers \r\n
+//                if (!debut_de_trame) {
+//                    command_at = true;
+//                    debut_de_trame = true;
+//                } else {
+//                    fin_de_trame = true;
+//                }
+//            }
+//
+//            // Traitement trame AT
+//            if (fin_de_trame && command_at) {
+//                process_trame_rx(receive_buffer);
+//                memset(receive_buffer, 0, sizeof(receive_buffer));
+//                receive_index = 0;
+//                debut_de_trame = false;
+//                fin_de_trame = false;
+//                command_at = false;
+//                rx_it_buffer = 0;
+//            }
+//
+//            // Traitement trame manette
+//            if (fin_de_trame && trame_manette) {
+//                process_trame_manette(receive_buffer_int8);
+//                memset(receive_buffer_int8, 0, sizeof(receive_buffer));
+//                receive_index = 0;
+//                debut_de_trame = false;
+//                fin_de_trame = false;
+//                trame_manette = false;
+//                rx_it_buffer = 0;
+//            }
+//            if (fin_de_trame){
+//            memset(receive_buffer_int8, 0, sizeof(receive_buffer)); //debug
+//            }
+//        }
+//
+//        // Re-armement de l’interruption
+//        HAL_UART_Receive_IT(&huart_BLE, &rx_it_buffer, 1);
+//    }
+//}
+
 
 
 ////////////////////////////////////////////////////////////////// CODE RX
