@@ -84,7 +84,6 @@ void process_trame_rx(char* receive_buffer) {
 
 		else {							//Erreur
 			flags.UNKNOW_COMMAND = true;
-			strcpy(receive_buffer, unknow_command); //utile pr le debug
 			return;
 		}
 		}

@@ -2,4 +2,5 @@
 
 #NOTES A MOI MEME 
 
-- vérifier que les boutons fonctionnent (sur le drone)
+- vérifier que les boutons fonctionnent 
+(sur le drone)

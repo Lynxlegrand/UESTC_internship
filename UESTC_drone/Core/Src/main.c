@@ -112,18 +112,20 @@ int main(void)
 
   //Config du module BLE
   config_BLE_drone();
-  //BLE.ReadSPPMAC();
+  //Config moteurs
+  DC_Motor_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  for(int i=0;i<GPIO_NUM_CONVERSIONS;i++){ //debug
-		  if(gpioData_2[i]==1){
-			  gpioData_2[i] =0;
-		  }
-	  }
+//	  for(int i=0;i<GPIO_NUM_CONVERSIONS;i++){ //debug
+//		  if(gpioData_2[i]==1){
+//			  gpioData_2[i] =0;
+//		  }
+//	  }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
