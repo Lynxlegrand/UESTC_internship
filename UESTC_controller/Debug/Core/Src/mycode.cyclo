@@ -9,6 +9,6 @@
 ../Core/Src/mycode.c:92:6:config_BLE_manette	1
 ../Core/Src/mycode.c:128:6:wait_until_flag	3
 ../Core/Src/mycode.c:144:6:TIMEOUT_ERR_HANDLER	1
-../Core/Src/mycode.c:161:6:send_trame_if_necessary	3
+../Core/Src/mycode.c:161:6:send_trame_if_necessary	2
 ../Core/Src/mycode.c:171:6:build_drone_trame_char	4
 ../Core/Src/mycode.c:246:6:parse_drone_trame_char	6

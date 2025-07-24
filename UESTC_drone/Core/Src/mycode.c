@@ -18,6 +18,7 @@ char unknow_command[RX_BUFFER_SIZE];
 // flags
 SystemFlags flags = {0};
 
+
 // Dictionnaires
 #define COMMAND_COUNT_RX 7
 CommandEntry command_table_rx[COMMAND_COUNT_RX] = {
@@ -78,7 +79,8 @@ void process_trame_rx(char* receive_buffer) {
 		}
 
 		if (receive_buffer[0] == '$') {  // comparaison d'un caractère
-		    parse_drone_trame_char(receive_buffer);
+		    parse_drone_trame_char(receive_buffer);		//écrit dans les buffers adcData_2 et gpioData_2
+		    process_gpios(&gpioData_2);
 
 		}
 
@@ -301,3 +303,34 @@ void parse_drone_trame_char(const char* buffer) {
 //}
 
 
+////////////////////////////////////////////////////////////////// CODE MAINLOOP
+SystemButtons buttons = {0};
+
+void mainloop_drone_control(void){
+
+}
+
+void process_gpios(int* gpioData){
+	if (gpioData[4]){
+		buttons.EMERGENCY_STOP_BUTTON = true;
+		gpioData[4]=0; //sécurité
+	}
+	if (gpioData[0]){
+		buttons.BACK_OFFSET_BUTTON = true;
+		gpioData[0]=0; //sécurité
+	}
+	if (gpioData[1]){
+		buttons.LEFT_OFFSET_BUTTON = true;
+		gpioData[1]=0; //sécurité
+	}
+	if (gpioData[2]){
+		buttons.FRONT_OFFSET_BUTTON = true;
+		gpioData[2]=0; //sécurité
+	}
+	if (gpioData[3]){
+		buttons.RIGHT_OFFSET_BUTTON = true;
+		gpioData[3]=0; //sécurité
+	}
+
+
+}

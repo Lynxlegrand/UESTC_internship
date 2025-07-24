@@ -159,7 +159,7 @@ bool MUST_SEND_TRAME = false;
 char trame[TRAME_SIZE];
 
 void send_trame_if_necessary(void){
-	if(flags.BLE_CONNECTED && MUST_SEND_TRAME){
+	if(MUST_SEND_TRAME){//flags.BLE_CONNECTED &&
 		build_drone_trame_char(trame,TRAME_SIZE);
 		BLE.SendCommand(trame);
 		MUST_SEND_TRAME = false;

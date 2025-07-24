@@ -120,12 +120,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//	  for(int i=0;i<GPIO_NUM_CONVERSIONS;i++){ //debug
-//		  if(gpioData_2[i]==1){
-//			  gpioData_2[i] =0;
-//		  }
-//	  }
-
+	mainloop_drone_control();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -55,9 +55,13 @@ typedef struct {
 	bool CONNECTING;
 	bool RESTORING;
 	bool BLE_HAS_BEEN_DISCONNECTED;
+	bool EMERGENCY_STOP;
+	bool MOTORS_ON;
 } SystemFlags;
 
 extern SystemFlags flags;
+
+
 //Structures
 typedef void (*CommandHandler)(void);
 
@@ -112,6 +116,21 @@ void process_trame(uint8_t* trame);
 #define HEADER_BYTE 0xAA
 #define FOOTER_BYTE 0x7E
 void parse_drone_trame_char(const char* buffer);
+
+
+////////////////////////////////////////////////////////////////// CODE MAINLOOP
+typedef struct {
+	bool LEFT_OFFSET_BUTTON;
+	bool RIGHT_OFFSET_BUTTON;
+	bool FRONT_OFFSET_BUTTON;
+	bool BACK_OFFSET_BUTTON;
+	bool EMERGENCY_STOP_BUTTON;
+} SystemButtons;
+
+extern SystemButtons buttons;
+
+void mainloop_drone_control(void);
+void process_gpios(void);
 
 
 #endif /* INC_MYCODE_H_ */
