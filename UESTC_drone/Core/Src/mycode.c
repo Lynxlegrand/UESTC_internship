@@ -20,7 +20,7 @@ SystemFlags flags = {0};
 
 
 // Dictionnaires
-#define COMMAND_COUNT_RX 7
+#define COMMAND_COUNT_RX 9
 CommandEntry command_table_rx[COMMAND_COUNT_RX] = {
     {"BLE_DISC\r\n", handle_BLE_DISC},			//NB : les trammes réelles commencent et se terminent toutes par \r\n
 	{"OK\r\n", handle_OK},
@@ -28,6 +28,8 @@ CommandEntry command_table_rx[COMMAND_COUNT_RX] = {
 	{"RESETTING!\r\n", handle_RSTING},
 	{"CONNECTING......\r\n", handle_CONNECTING},
 	{"RESTORING......\r\n", handle_RESTORING},
+	{"IM_READY\r\n", handle_IM_READY},
+	{"RUN AS SEVER\r\n", handle_RUN_AS_SERVER},
     {"BLE_CONN\r\n", handle_BLE_CONN}
 };
 
@@ -62,6 +64,19 @@ void handle_RESTORING(void){
 	flags.RESTORING = true;
 }
 
+void handle_IM_READY(void){
+	flags.IM_READY = true;
+}
+
+void handle_UNKNOW_COMMAND(char* receive_buffer){
+	flags.UNKNOW_COMMAND = true;
+	strcpy(unknow_command,receive_buffer);
+}
+
+void handle_RUN_AS_SERVER(void){
+	flags.RUN_AS_SERVER = true;
+}
+
 
 
 // fonctions
@@ -80,12 +95,12 @@ void process_trame_rx(char* receive_buffer) {
 
 		if (receive_buffer[0] == '$') {  // comparaison d'un caractère
 		    parse_drone_trame_char(receive_buffer);		//écrit dans les buffers adcData_2 et gpioData_2
-		    process_gpios(&gpioData_2);
+		    process_gpios(gpioData_2);
 
 		}
 
 		else {							//Erreur
-			flags.UNKNOW_COMMAND = true;
+			handle_UNKNOW_COMMAND(receive_buffer);
 			return;
 		}
 		}
@@ -151,7 +166,7 @@ void wait_until_flag(volatile bool* flag, uint32_t timeout_ms) {
 
 
 void TIMEOUT_ERR_HANDLER(void){
-	//Ecrire ça plus tard
+	flags.TIMEOUT_ERR = true;
 }
 
 
@@ -303,12 +318,8 @@ void parse_drone_trame_char(const char* buffer) {
 //}
 
 
-////////////////////////////////////////////////////////////////// CODE MAINLOOP
+////////////////////////////////////////////////////////////////// CODE BUTTONS
 SystemButtons buttons = {0};
-
-void mainloop_drone_control(void){
-
-}
 
 void process_gpios(int* gpioData){
 	if (gpioData[4]){

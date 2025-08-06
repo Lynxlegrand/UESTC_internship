@@ -2,9 +2,7 @@
 
 #NOTES A MOI MEME 
 
-- resouder le bouton "left offset"
-
-- resouder le joystick droit, potentiomètre droit
+- continuer à adapter le code mainloop.c
 
 - faire le code qui relie adcData_2 et gpioData_2 aux moteurs
 

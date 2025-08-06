@@ -1,0 +1,60 @@
+/*
+ * mainloop.h
+ *
+ *  Created on: Jul 25, 2025
+ *      Author: hugoc
+ */
+
+#ifndef INC_MAINLOOP_H_
+#define INC_MAINLOOP_H_
+
+#include "mycode.h"
+#include <math.h>
+
+
+// Takeoff parameters
+#define MOTORS_TAKEOFF_POWER 30  //% de la puissance des moteurs
+#define MOTORS_STEP_PERCENT 0.01
+#define MOTORS_INTERVAL_MS 2			//6 secondes pr décoller
+
+
+#define MOTEUR_AVANT_DROIT 1
+#define MOTEUR_AVANT_GAUCHE 3
+#define MOTEUR_ARRIERE_DROIT 4
+#define MOTEUR_ARRIERE_GAUCHE 2
+        // Coefficients
+#define OFFSET_SENSIBILITY 1 //% de la puissance des moteurs
+#define SIGNAL_LOST_TIMEOUT 3000 //ms
+#define HEIGHT_SENSIBILITY 0.01f //facteur qui va régler la sensibilité des joysticks
+#define TRANSLATION_SENSITIVITY 0.01f // par exemple 200.0f
+#define YAW_SENSITIVITY 0.01f       // par exemple 150.0f
+
+#define CENTER_Z 2053
+#define CENTER_YAW 2080
+#define CENTER_X 2013
+#define CENTER_Y 2048
+
+#define DEADZONE_Z 100
+#define DEADZONE_YAW 100
+#define DEADZONE_X 100
+#define DEADZONE_Y 100
+
+#define MAX_DIFF 30.0f // Écart maximal autorisé entre moteurs
+
+
+typedef struct {
+	float MOTEUR_AVANT_DROIT_OFFSET;
+	float MOTEUR_AVANT_GAUCHE_OFFSET;
+	float MOTEUR_ARRIERE_DROIT_OFFSET;
+	float MOTEUR_ARRIERE_GAUCHE_OFFSET;
+} SystemMotorOffsets;
+
+extern SystemMotorOffsets motorOffsets;
+
+
+void mainloop_drone_control(void);
+
+void decollage(void);
+float normalize_with_deadzone(int raw, int center, int deadzone);
+
+#endif /* INC_MAINLOOP_H_ */

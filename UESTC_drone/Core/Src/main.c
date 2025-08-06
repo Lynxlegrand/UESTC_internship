@@ -120,7 +120,15 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	mainloop_drone_control();
+	  mainloop_drone_control();
+//	  if(buttons.FRONT_OFFSET_BUTTON && !(flags.RAMPE_EN_COURS)){
+//		  decollage();
+//		  buttons.FRONT_OFFSET_BUTTON = false;
+//	  }
+//	  if (buttons.EMERGENCY_STOP_BUTTON){
+//		  emergency_stop();
+//		  buttons.EMERGENCY_STOP_BUTTON = false;
+//	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

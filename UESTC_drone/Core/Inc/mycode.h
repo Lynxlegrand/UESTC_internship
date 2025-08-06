@@ -57,6 +57,10 @@ typedef struct {
 	bool BLE_HAS_BEEN_DISCONNECTED;
 	bool EMERGENCY_STOP;
 	bool MOTORS_ON;
+	bool RAMPE_EN_COURS;
+	bool IM_READY;
+	bool RUN_AS_SERVER;
+	bool TIMEOUT_ERR;
 } SystemFlags;
 
 extern SystemFlags flags;
@@ -81,8 +85,9 @@ void handle_ERR_CMD(void);
 void handle_RSTING(void);
 void handle_CONNECTING(void);
 void handle_RESTORING(void);
-
-
+void handle_UNKNOW_COMMAND(char* receive_buffer);
+void handle_IM_READY(void);
+void handle_RUN_AS_SERVER(void);
 ////////////////////////////////////////////////////////////////// CODE TX
 
 //Variables
@@ -129,8 +134,8 @@ typedef struct {
 
 extern SystemButtons buttons;
 
-void mainloop_drone_control(void);
-void process_gpios(void);
+
+void process_gpios(int* gpioData);
 
 
 #endif /* INC_MYCODE_H_ */

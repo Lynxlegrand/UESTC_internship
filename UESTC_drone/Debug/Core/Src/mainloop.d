@@ -1,5 +1,5 @@
-Core/Src/DC_motor.o: ../Core/Src/DC_motor.c ../Core/Inc/DC_motor.h \
- ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
+Core/Src/mainloop.o: ../Core/Src/mainloop.c ../Core/Inc/mainloop.h \
+ ../Core/Inc/mycode.h ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
  ../Core/Inc/stm32f1xx_hal_conf.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h \
@@ -26,8 +26,9 @@ Core/Src/DC_motor.o: ../Core/Src/DC_motor.c ../Core/Inc/DC_motor.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
- ../Core/Inc/mycode.h ../Core/Inc/ble_td5322a.h ../Core/Inc/DC_motor.h
-../Core/Inc/DC_motor.h:
+ ../Core/Inc/ble_td5322a.h ../Core/Inc/DC_motor.h
+../Core/Inc/mainloop.h:
+../Core/Inc/mycode.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h:
@@ -55,6 +56,5 @@ Core/Src/DC_motor.o: ../Core/Src/DC_motor.c ../Core/Inc/DC_motor.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h:
-../Core/Inc/mycode.h:
 ../Core/Inc/ble_td5322a.h:
 ../Core/Inc/DC_motor.h:

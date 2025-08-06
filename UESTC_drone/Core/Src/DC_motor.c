@@ -5,8 +5,6 @@
  *      Author: hugoc
  */
 
-
-#include "stm32f1xx_hal.h"
 #include "DC_motor.h"
 
 // Extern : handles HAL timer, déclarés dans main.c ou ailleurs
@@ -25,6 +23,15 @@ typedef struct {
 } Ramp_t;
 
 static Ramp_t ramps[4] = {0};
+
+void emergency_stop(void){
+	for(int i = 0; i < 4; i++){
+	    Ramp_t *r = &ramps[i];
+        r->active = 0; // fin rampe
+		DC_Motor_SetDuty(i + 1, 0);
+	}
+	flags.RAMPE_EN_COURS = false;
+}
 
 void DC_Motor_Init(void)
 {
@@ -68,6 +75,7 @@ void DC_Motor_StartRamp(uint8_t motor_id, float start, float target, float step,
     r->interval_ms = interval_ms;
     r->counter_ms = 0;
     r->active = 1;
+    flags.RAMPE_EN_COURS = true;
 
     DC_Motor_SetDuty(motor_id, start);
 }
@@ -94,6 +102,7 @@ void DC_Motor_RampTick(void)
             }
             else {
                 r->active = 0; // fin rampe
+                flags.RAMPE_EN_COURS = false;
             }
 
             DC_Motor_SetDuty(i + 1, r->current_duty);
