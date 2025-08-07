@@ -2,12 +2,17 @@
 
 #NOTES A MOI MEME 
 
-- continuer à adapter le code mainloop.c
+- problème sur les moteurs : 
 
-- faire le code qui relie adcData_2 et gpioData_2 aux moteurs
+M1 : fonctionne pas du tout
+M2 : fonctionne bien
+M3 : fonctionne avec un retard
+M4 : fonctionne bien
 
-- adcData_2 au repos : [2055 +2058-2051;2090+2104-2084;2015+2018-2011;2047+2048-2042]
+Le problème ne vient pas de la batterie car en débranchant M2 et M4, ça ne change rien. 
+J'ai testé les drivers, ils ont l'air de fonctionner. 
+Après un test avec le multimètre, les broches des connecteurs se sont dessouder, il suffit juste de rajouter de l'étain. 
 
-- adcData_2 au max : 4100
+- la manette fonctionne pas trop mal : un peu lente à se connecter (à cause du reset de la carte BLE)
+- besoins de redémarrer quand ça ne marche pas 
 
-- adcData_2 au min : 0

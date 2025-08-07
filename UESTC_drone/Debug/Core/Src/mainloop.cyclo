@@ -1,4 +1,4 @@
-../Core/Src/mainloop.c:12:6:mainloop_drone_control	19
-../Core/Src/mainloop.c:152:6:manage_motor_offsets	1
-../Core/Src/mainloop.c:159:6:decollage	2
-../Core/Src/mainloop.c:165:7:normalize_with_deadzone	2
+../Core/Src/mainloop.c:12:6:mainloop_drone_control	14
+../Core/Src/mainloop.c:156:6:manage_motor_offsets	1
+../Core/Src/mainloop.c:163:6:decollage	2
+../Core/Src/mainloop.c:169:7:normalize_with_deadzone	2

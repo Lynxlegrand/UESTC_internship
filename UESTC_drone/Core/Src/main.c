@@ -114,6 +114,7 @@ int main(void)
   config_BLE_drone();
   //Config moteurs
   DC_Motor_Init();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -121,14 +122,6 @@ int main(void)
   while (1)
   {
 	  mainloop_drone_control();
-//	  if(buttons.FRONT_OFFSET_BUTTON && !(flags.RAMPE_EN_COURS)){
-//		  decollage();
-//		  buttons.FRONT_OFFSET_BUTTON = false;
-//	  }
-//	  if (buttons.EMERGENCY_STOP_BUTTON){
-//		  emergency_stop();
-//		  buttons.EMERGENCY_STOP_BUTTON = false;
-//	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -12,6 +12,7 @@ float motor_power_values[4];
 void mainloop_drone_control(void) {
     static float pitch_offset = 0;
     static float roll_offset = 0;
+    static float persistent_base_power = MOTORS_TAKEOFF_POWER;
 
     static float FR_power = MOTORS_TAKEOFF_POWER;
     static float FL_power = MOTORS_TAKEOFF_POWER;
@@ -33,6 +34,7 @@ void mainloop_drone_control(void) {
         buttons.LEFT_OFFSET_BUTTON = false;
         buttons.EMERGENCY_STOP_BUTTON = false;
         buttons.RIGHT_OFFSET_BUTTON = false;
+        return;
     }
 
     if (flags.RAMPE_EN_COURS) {
@@ -57,11 +59,12 @@ void mainloop_drone_control(void) {
             roll_offset -= 1;
             buttons.LEFT_OFFSET_BUTTON = false;
         }
+
         // Coefficients
-        const float k_z           = HEIGHT_SENSIBILITY;
+        const float k_z = HEIGHT_SENSIBILITY;
         const float k_translation = TRANSLATION_SENSITIVITY; // par exemple 200.0f
-        const float k_yaw         = YAW_SENSITIVITY;         // par exemple 150.0f
-        const float k_offset      = OFFSET_SENSIBILITY;
+        const float k_yaw = YAW_SENSITIVITY;                 // par exemple 150.0f
+        const float k_offset = OFFSET_SENSITIVITY;
 
         const int center_z = CENTER_Z;
         const int center_yaw = CENTER_YAW;
@@ -72,80 +75,81 @@ void mainloop_drone_control(void) {
         const int deadzone_yaw = DEADZONE_YAW;
         const int deadzone_x = DEADZONE_X;
         const int deadzone_y = DEADZONE_Y;
+
         // Lecture des joysticks avec zones mortes
-        float z          = normalize_with_deadzone(adcData_2[0], center_z, deadzone_z);
-        float yaw        = normalize_with_deadzone(adcData_2[1], center_yaw, deadzone_yaw);
-        float trans_x    = normalize_with_deadzone(adcData_2[3], center_x, deadzone_x); // avant/arrière
-        float trans_y    = normalize_with_deadzone(adcData_2[2], center_y, deadzone_y); // droite/gauche
+        float z_input = normalize_with_deadzone(adcData_2[0], center_z, deadzone_z);
+        float yaw = normalize_with_deadzone(adcData_2[1], center_yaw, deadzone_yaw);
+        float trans_x = normalize_with_deadzone(adcData_2[3], center_x, deadzone_x); // avant/arrière
+        float trans_y = normalize_with_deadzone(adcData_2[2], center_y, deadzone_y); // droite/gauche
 
-        //Changments des sens
-        z = -z;
-        yaw = yaw;
+        // Changements de sens (si nécessaires)
+        z_input = -z_input;
         trans_x = -trans_x;
-        trans_y = trans_y;
+        // yaw et trans_y restent tels quels
 
+        // Mise à jour de la base de puissance persistante
+        if (fabsf(z_input) > 0.01f) {
+            persistent_base_power += z_input * k_z;
 
-        // Base power
-        float base_power = z * k_z;
+            // Clamp entre 0 et 100
+            if (persistent_base_power > 100.0f) persistent_base_power = 100.0f;
+            if (persistent_base_power < 0.0f) persistent_base_power = 0.0f;
+        }
 
-        // Calcul des puissances avec translation et rotation
-        FR_power += base_power
-                 - trans_x * k_translation     // avant
-                 + trans_y * k_translation     // gauche
-                 - yaw * k_yaw
-                 + pitch_offset * k_offset
-                 - roll_offset  * k_offset;
+        float base_power = persistent_base_power;
 
-        FL_power += base_power
-                 - trans_x * k_translation
-                 - trans_y * k_translation     // droite
-                 + yaw * k_yaw
-                 + pitch_offset * k_offset
-                 + roll_offset  * k_offset;
+        // Calcul des contributions temporaires (déséquilibres joystick)
+        float FR_temp = -trans_x * k_translation + trans_y * k_translation - yaw * k_yaw;
+        float FL_temp = -trans_x * k_translation - trans_y * k_translation + yaw * k_yaw;
+        float BR_temp = +trans_x * k_translation + trans_y * k_translation + yaw * k_yaw;
+        float BL_temp = +trans_x * k_translation - trans_y * k_translation - yaw * k_yaw;
 
-        BR_power += base_power
-                 + trans_x * k_translation     // arrière
-                 + trans_y * k_translation
-                 + yaw * k_yaw
-                 - pitch_offset * k_offset
-                 - roll_offset  * k_offset;
+        // Limiter les déséquilibres temporaires
+        const float max_temp_imbalance = MAX_TEMPORARY_IMBALANCE;
 
-        BL_power += base_power
-                 + trans_x * k_translation
-                 - trans_y * k_translation
-                 - yaw * k_yaw
-                 - pitch_offset * k_offset
-                 + roll_offset  * k_offset;
+        FR_temp = fminf(fmaxf(FR_temp, -max_temp_imbalance), max_temp_imbalance);
+        FL_temp = fminf(fmaxf(FL_temp, -max_temp_imbalance), max_temp_imbalance);
+        BR_temp = fminf(fmaxf(BR_temp, -max_temp_imbalance), max_temp_imbalance);
+        BL_temp = fminf(fmaxf(BL_temp, -max_temp_imbalance), max_temp_imbalance);
+
+        // --- Puissance des moteurs ---
+        FR_power = base_power + FR_temp + pitch_offset * k_offset - roll_offset * k_offset;
+        FL_power = base_power + FL_temp + pitch_offset * k_offset + roll_offset * k_offset;
+        BR_power = base_power + BR_temp - pitch_offset * k_offset - roll_offset * k_offset;
+        BL_power = base_power + BL_temp - pitch_offset * k_offset + roll_offset * k_offset;
 
         // Moyenne des puissances
         float avg_power = (FR_power + FL_power + BR_power + BL_power) / 4.0f;
 
-        // Saturation à [0 ; 100]
-		FR_power = (FR_power > 100) ? 100 : (FR_power < 0) ? 0 : FR_power;
-		FL_power = (FL_power > 100) ? 100 : (FL_power < 0) ? 0 : FL_power;
-		BR_power = (BR_power > 100) ? 100 : (BR_power < 0) ? 0 : BR_power;
-		BL_power = (BL_power > 100) ? 100 : (BL_power < 0) ? 0 : BL_power;
+        // Équilibrage autour de la moyenne
+        const float max_diff = MAX_DIFF;
 
-        // Borne chaque puissance autour de la moyenne
-        FR_power = fminf(fmaxf(FR_power, avg_power - MAX_DIFF), avg_power + MAX_DIFF);
-        FL_power = fminf(fmaxf(FL_power, avg_power - MAX_DIFF), avg_power + MAX_DIFF);
-        BR_power = fminf(fmaxf(BR_power, avg_power - MAX_DIFF), avg_power + MAX_DIFF);
-        BL_power = fminf(fmaxf(BL_power, avg_power - MAX_DIFF), avg_power + MAX_DIFF);
+        FR_power = fminf(fmaxf(FR_power, avg_power - max_diff), avg_power + max_diff);
+        FL_power = fminf(fmaxf(FL_power, avg_power - max_diff), avg_power + max_diff);
+        BR_power = fminf(fmaxf(BR_power, avg_power - max_diff), avg_power + max_diff);
+        BL_power = fminf(fmaxf(BL_power, avg_power - max_diff), avg_power + max_diff);
 
+        // Clamp final [0 ; 100]
+        FR_power = fminf(fmaxf(FR_power, 0.0f), 100.0f);
+        FL_power = fminf(fmaxf(FL_power, 0.0f), 100.0f);
+        BR_power = fminf(fmaxf(BR_power, 0.0f), 100.0f);
+        BL_power = fminf(fmaxf(BL_power, 0.0f), 100.0f);
 
-		motor_power_values[0] = FR_power;
-		motor_power_values[1] = FL_power;
-		motor_power_values[2] = BR_power;
-		motor_power_values[3] = BL_power;
+        // Mémorisation pour affichage/debug
+        motor_power_values[0] = FR_power;
+        motor_power_values[1] = FL_power;
+        motor_power_values[2] = BR_power;
+        motor_power_values[3] = BL_power;
 
-
-        // Envoi des commandes
+        // Envoi des commandes aux moteurs
         DC_Motor_SetDuty(MOTEUR_AVANT_DROIT, FR_power);
-        DC_Motor_SetDuty(MOTEUR_AVANT_GAUCHE,  FL_power);
-        DC_Motor_SetDuty(MOTEUR_ARRIERE_DROIT,  BR_power);
-        DC_Motor_SetDuty(MOTEUR_ARRIERE_GAUCHE,   BL_power);
+        DC_Motor_SetDuty(MOTEUR_AVANT_GAUCHE, FL_power);
+        DC_Motor_SetDuty(MOTEUR_ARRIERE_DROIT, BR_power);
+        DC_Motor_SetDuty(MOTEUR_ARRIERE_GAUCHE, BL_power);
+        return;
     }
 }
+
 
 SystemMotorOffsets motorOffsets = {0};
 

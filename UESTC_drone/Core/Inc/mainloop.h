@@ -14,8 +14,8 @@
 
 // Takeoff parameters
 #define MOTORS_TAKEOFF_POWER 30  //% de la puissance des moteurs
-#define MOTORS_STEP_PERCENT 0.01
-#define MOTORS_INTERVAL_MS 2			//6 secondes pr décoller
+#define MOTORS_STEP_PERCENT 0.1
+#define MOTORS_INTERVAL_MS 20			//6 secondes pr décoller
 
 
 #define MOTEUR_AVANT_DROIT 1
@@ -23,7 +23,7 @@
 #define MOTEUR_ARRIERE_DROIT 4
 #define MOTEUR_ARRIERE_GAUCHE 2
         // Coefficients
-#define OFFSET_SENSIBILITY 1 //% de la puissance des moteurs
+#define OFFSET_SENSITIVITY 1 //% de la puissance des moteurs
 #define SIGNAL_LOST_TIMEOUT 3000 //ms
 #define HEIGHT_SENSIBILITY 0.01f //facteur qui va régler la sensibilité des joysticks
 #define TRANSLATION_SENSITIVITY 0.01f // par exemple 200.0f
@@ -39,7 +39,8 @@
 #define DEADZONE_X 100
 #define DEADZONE_Y 100
 
-#define MAX_DIFF 30.0f // Écart maximal autorisé entre moteurs
+#define MAX_TEMPORARY_IMBALANCE  20.0f
+#define MAX_DIFF                 30.0f
 
 
 typedef struct {
