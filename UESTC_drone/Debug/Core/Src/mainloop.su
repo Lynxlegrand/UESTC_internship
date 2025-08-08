@@ -1,4 +1,5 @@
-../Core/Src/mainloop.c:12:6:mainloop_drone_control	112	static
-../Core/Src/mainloop.c:156:6:manage_motor_offsets	4	static
-../Core/Src/mainloop.c:163:6:decollage	24	static
-../Core/Src/mainloop.c:169:7:normalize_with_deadzone	32	static
+../Core/Src/mainloop.c:12:6:mainloop_drone_control	120	static
+../Core/Src/mainloop.c:198:6:manage_motor_offsets	4	static
+../Core/Src/mainloop.c:205:6:decollage	24	static
+../Core/Src/mainloop.c:211:7:normalize_with_deadzone	32	static
+../Core/Src/mainloop.c:220:7:round_to_2_decimals	16	static

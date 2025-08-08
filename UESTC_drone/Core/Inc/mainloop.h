@@ -23,11 +23,11 @@
 #define MOTEUR_ARRIERE_DROIT 4
 #define MOTEUR_ARRIERE_GAUCHE 2
         // Coefficients
-#define OFFSET_SENSITIVITY 1 //% de la puissance des moteurs
+#define OFFSET_SENSITIVITY 1.0f //% de la puissance des moteurs
 #define SIGNAL_LOST_TIMEOUT 3000 //ms
 #define HEIGHT_SENSIBILITY 0.01f //facteur qui va régler la sensibilité des joysticks
-#define TRANSLATION_SENSITIVITY 0.01f // par exemple 200.0f
-#define YAW_SENSITIVITY 0.01f       // par exemple 150.0f
+#define TRANSLATION_SENSITIVITY 20.0f // par exemple 200.0f
+#define YAW_SENSITIVITY 10.0f       // par exemple 150.0f
 
 #define CENTER_Z 2053
 #define CENTER_YAW 2080
@@ -41,6 +41,8 @@
 
 #define MAX_TEMPORARY_IMBALANCE  20.0f
 #define MAX_DIFF                 30.0f
+
+#define MAX_OFFSET_NUMBER 3		//nombre de fois qu'on peut ajuster l'offset dans un sens et une direction
 
 
 typedef struct {
@@ -57,5 +59,6 @@ void mainloop_drone_control(void);
 
 void decollage(void);
 float normalize_with_deadzone(int raw, int center, int deadzone);
+float round_to_2_decimals(float value);
 
 #endif /* INC_MAINLOOP_H_ */

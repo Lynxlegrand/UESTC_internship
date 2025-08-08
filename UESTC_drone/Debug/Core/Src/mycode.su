@@ -13,6 +13,5 @@
 ../Core/Src/mycode.c:152:6:wait_until_flag	24	static
 ../Core/Src/mycode.c:168:6:TIMEOUT_ERR_HANDLER	4	static
 ../Core/Src/mycode.c:185:6:send_trame_if_necessary	8	static
-../Core/Src/mycode.c:195:6:build_drone_trame_char	48	static
 ../Core/Src/mycode.c:270:6:parse_drone_trame_char	72	dynamic
 ../Core/Src/mycode.c:324:6:process_gpios	16	static

@@ -19,16 +19,51 @@ void mainloop_drone_control(void) {
     static float BR_power = MOTORS_TAKEOFF_POWER;
     static float BL_power = MOTORS_TAKEOFF_POWER;
 
-    if (buttons.EMERGENCY_STOP_BUTTON && flags.MOTORS_ON) {
-        emergency_stop();
+    if (buttons.EMERGENCY_STOP_BUTTON) {
         flags.EMERGENCY_STOP = true;
-        flags.MOTORS_ON = false;
+        buttons.EMERGENCY_STOP_BUTTON = false;
         return;
     }
+    if(flags.EMERGENCY_STOP){
+    	emergency_stop();
+    	flags.MOTORS_ON = false;
+        flags.BLE_HAS_BEEN_DISCONNECTED = false;
+        motor_power_values[0] = 0;
+        motor_power_values[1] = 0;
+        motor_power_values[2] = 0;
+        motor_power_values[3] = 0;
+    	if(buttons.FRONT_OFFSET_BUTTON){
+    		flags.EMERGENCY_STOP = false;
+    	}
+    	return;
+    }
+
+    static uint32_t ble_disconnect_time_ms = 0;
+
+    if (flags.BLE_HAS_BEEN_DISCONNECTED && flags.MOTORS_ON) {
+            if (ble_disconnect_time_ms == 0) {
+                ble_disconnect_time_ms = HAL_GetTick(); // première détection
+            } else if (HAL_GetTick() - ble_disconnect_time_ms >= BLE_TIMEOUT_MS) {
+                flags.EMERGENCY_STOP = true;
+                flags.BLE_HAS_BEEN_DISCONNECTED = false; // on évite de relancer plusieurs fois
+                ble_disconnect_time_ms = 0;
+                return;
+            }
+        } else {
+            // BLE reconnectée, on réinitialise le timer de déconnexion
+            ble_disconnect_time_ms = 0;
+        }
+
+
 
     if (!(flags.MOTORS_ON) && buttons.FRONT_OFFSET_BUTTON) {
         decollage();
+        motor_power_values[0] = MOTORS_TAKEOFF_POWER;
+        motor_power_values[1] = MOTORS_TAKEOFF_POWER;
+        motor_power_values[2] = MOTORS_TAKEOFF_POWER;
+        motor_power_values[3] = MOTORS_TAKEOFF_POWER;
         flags.MOTORS_ON = true;
+        flags.EMERGENCY_STOP = false;
         buttons.FRONT_OFFSET_BUTTON = false;
         buttons.BACK_OFFSET_BUTTON = false;
         buttons.LEFT_OFFSET_BUTTON = false;
@@ -41,7 +76,7 @@ void mainloop_drone_control(void) {
         return;
     }
 
-    if (flags.MOTORS_ON) {
+    if (flags.MOTORS_ON && !(flags.EMERGENCY_STOP)) {
         // --- Gestion des offsets fixes ---
         if (buttons.FRONT_OFFSET_BUTTON) {
             pitch_offset += 1;
@@ -59,6 +94,13 @@ void mainloop_drone_control(void) {
             roll_offset -= 1;
             buttons.LEFT_OFFSET_BUTTON = false;
         }
+
+        // On borne les offsets pour qu'il n'y ait pas trop de déséquilibres
+        const float max_offset_number = MAX_OFFSET_NUMBER;
+
+        pitch_offset = fminf(fmaxf(pitch_offset, -max_offset_number), max_offset_number);
+        roll_offset = fminf(fmaxf(roll_offset, -max_offset_number), max_offset_number);
+
 
         // Coefficients
         const float k_z = HEIGHT_SENSIBILITY;
@@ -119,7 +161,7 @@ void mainloop_drone_control(void) {
         BL_power = base_power + BL_temp - pitch_offset * k_offset + roll_offset * k_offset;
 
         // Moyenne des puissances
-        float avg_power = (FR_power + FL_power + BR_power + BL_power) / 4.0f;
+        float avg_power = round_to_2_decimals((FR_power + FL_power + BR_power + BL_power) / 4.0f);
 
         // Équilibrage autour de la moyenne
         const float max_diff = MAX_DIFF;
@@ -172,5 +214,10 @@ float normalize_with_deadzone(int raw, int center, int deadzone) {
     if (abs(delta) <= deadzone)
         return 0.0f;
 
-    return (float)delta / 2048.0f;  // garde la même échelle [-1, 1]
+    return round_to_2_decimals((float)delta / 2048.0f);  // garde la même échelle [-1, 1]
 }
+
+float round_to_2_decimals(float value) {
+    return roundf(value * 100.0f) / 100.0f;
+}
+

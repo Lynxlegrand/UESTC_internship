@@ -192,38 +192,38 @@ void send_trame_if_necessary(void){
 }
 
 
-void build_drone_trame_char(char* buffer, size_t buffer_size) {
-    // Initialisation du buffer
-    memset(buffer, 0, buffer_size);
-
-    // Ajoute début de trame
-    strncat(buffer, "\r\n", buffer_size - strlen(buffer) - 1);
-
-    // Permet au drone de détecter que c'est une trame de l'IHM
-    strncat(buffer, "$", buffer_size - strlen(buffer) - 1);
-
-    // Ajoute les données ADC (en texte lisible)
-    for (int i = 0; i < ADC_NUM_CONVERSIONS; i++) {
-        char tmp[10];
-        snprintf(tmp, sizeof(tmp), "%u/", adcData[i]);  // Convertit en string
-        strncat(buffer, tmp, buffer_size - strlen(buffer) - 1);
-    }
-
-    // Ajoute les données GPIO
-    for (int i = 0; i < GPIO_NUM_CONVERSIONS; i++) {
-        char tmp[5];
-        snprintf(tmp, sizeof(tmp), "%u", gpioData[i]);
-        strncat(buffer, tmp, buffer_size - strlen(buffer) - 1);
-
-        // Réinitialise si différent de 0
-        if (gpioData[i] != 0) {
-            gpioData[i] = 0;
-        }
-    }
-
-    // Ajoute fin de trame
-    strncat(buffer, "\r\n", buffer_size - strlen(buffer) - 1);
-}
+//void build_drone_trame_char(char* buffer, size_t buffer_size) {
+//    // Initialisation du buffer
+//    memset(buffer, 0, buffer_size);
+//
+//    // Ajoute début de trame
+//    strncat(buffer, "\r\n", buffer_size - strlen(buffer) - 1);
+//
+//    // Permet au drone de détecter que c'est une trame de l'IHM
+//    strncat(buffer, "$", buffer_size - strlen(buffer) - 1);
+//
+//    // Ajoute les données ADC (en texte lisible)
+//    for (int i = 0; i < ADC_NUM_CONVERSIONS; i++) {
+//        char tmp[10];
+//        snprintf(tmp, sizeof(tmp), "%u/", adcData[i]);  // Convertit en string
+//        strncat(buffer, tmp, buffer_size - strlen(buffer) - 1);
+//    }
+//
+//    // Ajoute les données GPIO
+//    for (int i = 0; i < GPIO_NUM_CONVERSIONS; i++) {
+//        char tmp[5];
+//        snprintf(tmp, sizeof(tmp), "%u", gpioData[i]);
+//        strncat(buffer, tmp, buffer_size - strlen(buffer) - 1);
+//
+//        // Réinitialise si différent de 0
+//        if (gpioData[i] != 0) {
+//            gpioData[i] = 0;
+//        }
+//    }
+//
+//    // Ajoute fin de trame
+//    strncat(buffer, "\r\n", buffer_size - strlen(buffer) - 1);
+//}
 
 //void build_drone_trame(uint8_t* buffer) {			//code la trame (plus opti que du texte : taille trame constante et rapidité)
 //    uint8_t idx = 0;
