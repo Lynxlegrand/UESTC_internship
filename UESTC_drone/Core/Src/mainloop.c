@@ -204,7 +204,8 @@ void manage_motor_offsets(){
 
 void decollage(void){
 	for(int i = 0; i < 4; i++){
-		DC_Motor_StartRamp(i+1,0,MOTORS_TAKEOFF_POWER, MOTORS_STEP_PERCENT, MOTORS_INTERVAL_MS);
+		//DC_Motor_StartRamp(i+1,0,MOTORS_TAKEOFF_POWER, MOTORS_STEP_PERCENT, MOTORS_INTERVAL_MS);
+		DC_Motor_SetDuty(i, MOTORS_TAKEOFF_POWER);
 	}
 }
 

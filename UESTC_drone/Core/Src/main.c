@@ -115,13 +115,18 @@ int main(void)
   //Config moteurs
   DC_Motor_Init();
 
+  DC_Motor_SetDuty(1, 15);	//debug
+  DC_Motor_SetDuty(2, 15);
+  DC_Motor_SetDuty(3, 15);
+  DC_Motor_SetDuty(4, 15);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  mainloop_drone_control();
+//	  mainloop_drone_control();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

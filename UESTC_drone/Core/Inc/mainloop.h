@@ -13,7 +13,7 @@
 
 
 // Takeoff parameters
-#define MOTORS_TAKEOFF_POWER 30  //% de la puissance des moteurs
+#define MOTORS_TAKEOFF_POWER 15  //% de la puissance des moteurs
 #define MOTORS_STEP_PERCENT 0.1
 #define MOTORS_INTERVAL_MS 20			//6 secondes pr décoller
 
