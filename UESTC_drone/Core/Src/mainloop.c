@@ -193,6 +193,125 @@ void mainloop_drone_control(void) {
 }
 
 
+
+
+
+void testloop_drone_control(void) {
+    static float persistent_base_power = MOTORS_TAKEOFF_POWER;
+
+    static float FR_power = MOTORS_TAKEOFF_POWER;
+    static float FL_power = MOTORS_TAKEOFF_POWER;
+    static float BR_power = MOTORS_TAKEOFF_POWER;
+    static float BL_power = MOTORS_TAKEOFF_POWER;
+
+    if (buttons.EMERGENCY_STOP_BUTTON) {
+        flags.EMERGENCY_STOP = true;
+        buttons.EMERGENCY_STOP_BUTTON = false;
+        return;
+    }
+    if(flags.EMERGENCY_STOP){
+    	emergency_stop();
+    	flags.MOTORS_ON = false;
+        flags.BLE_HAS_BEEN_DISCONNECTED = false;
+        motor_power_values[0] = 0;
+        motor_power_values[1] = 0;
+        motor_power_values[2] = 0;
+        motor_power_values[3] = 0;
+    	if(buttons.FRONT_OFFSET_BUTTON){
+    		flags.EMERGENCY_STOP = false;
+    	}
+    	return;
+    }
+
+    static uint32_t ble_disconnect_time_ms = 0;
+
+    if (flags.BLE_HAS_BEEN_DISCONNECTED && flags.MOTORS_ON) {
+            if (ble_disconnect_time_ms == 0) {
+                ble_disconnect_time_ms = HAL_GetTick(); // première détection
+            } else if (HAL_GetTick() - ble_disconnect_time_ms >= BLE_TIMEOUT_MS) {
+                flags.EMERGENCY_STOP = true;
+                flags.BLE_HAS_BEEN_DISCONNECTED = false; // on évite de relancer plusieurs fois
+                ble_disconnect_time_ms = 0;
+                return;
+            }
+        } else {
+            // BLE reconnectée, on réinitialise le timer de déconnexion
+            ble_disconnect_time_ms = 0;
+        }
+
+
+
+    if (!(flags.MOTORS_ON) && buttons.FRONT_OFFSET_BUTTON) {
+        decollage();
+        motor_power_values[0] = MOTORS_TAKEOFF_POWER;
+        motor_power_values[1] = MOTORS_TAKEOFF_POWER;
+        motor_power_values[2] = MOTORS_TAKEOFF_POWER;
+        motor_power_values[3] = MOTORS_TAKEOFF_POWER;
+        flags.MOTORS_ON = true;
+        flags.EMERGENCY_STOP = false;
+        buttons.FRONT_OFFSET_BUTTON = false;
+        buttons.BACK_OFFSET_BUTTON = false;
+        buttons.LEFT_OFFSET_BUTTON = false;
+        buttons.EMERGENCY_STOP_BUTTON = false;
+        buttons.RIGHT_OFFSET_BUTTON = false;
+        return;
+    }
+
+    if (flags.RAMPE_EN_COURS) {
+        return;
+    }
+
+    if (flags.MOTORS_ON && !(flags.EMERGENCY_STOP)) {
+
+        // Coefficients
+        const float k_z = HEIGHT_SENSIBILITY;
+        const int center_z = CENTER_Z;
+        const int deadzone_z = DEADZONE_Z;
+
+        // Lecture des joysticks avec zones mortes
+        float z_input = normalize_with_deadzone(adcData_2[0], center_z, deadzone_z);
+        // Changements de sens (si nécessaires)
+        z_input = -z_input;
+
+        // Mise à jour de la base de puissance persistante
+        if (fabsf(z_input) > 0.01f) {
+            persistent_base_power += z_input * k_z;
+
+            // Clamp entre 0 et 100
+            if (persistent_base_power > 100.0f) persistent_base_power = 100.0f;
+            if (persistent_base_power < 0.0f) persistent_base_power = 0.0f;
+        }
+
+        float base_power = persistent_base_power;
+
+        // --- Puissance des moteurs ---
+        FR_power = base_power;
+        FL_power = base_power;
+        BR_power = base_power;
+        BL_power = base_power;
+
+        // Clamp final [0 ; 100]
+        FR_power = fminf(fmaxf(FR_power, 0.0f), 100.0f);
+        FL_power = fminf(fmaxf(FL_power, 0.0f), 100.0f);
+        BR_power = fminf(fmaxf(BR_power, 0.0f), 100.0f);
+        BL_power = fminf(fmaxf(BL_power, 0.0f), 100.0f);
+
+        // Mémorisation pour affichage/debug
+        motor_power_values[0] = FR_power;
+        motor_power_values[1] = FL_power;
+        motor_power_values[2] = BR_power;
+        motor_power_values[3] = BL_power;
+
+        // Envoi des commandes aux moteurs
+        DC_Motor_SetDuty(MOTEUR_AVANT_DROIT, FR_power);
+        DC_Motor_SetDuty(MOTEUR_AVANT_GAUCHE, FL_power);
+        DC_Motor_SetDuty(MOTEUR_ARRIERE_DROIT, BR_power);
+        DC_Motor_SetDuty(MOTEUR_ARRIERE_GAUCHE, BL_power);
+        return;
+    }
+}
+
+
 SystemMotorOffsets motorOffsets = {0};
 
 void manage_motor_offsets(){

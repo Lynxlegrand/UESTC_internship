@@ -12,8 +12,18 @@
 #include <math.h>
 
 
+//Configurations du mode du drone
+
+#define MODE_NORMAL 1
+#define MODE_TEST_JOYSTICKS 2
+#define MODE_TEST_20_PERCENT 3
+
+// Choix du mode
+#define MODE_CHOICE	2
+
+
 // Takeoff parameters
-#define MOTORS_TAKEOFF_POWER 15  //% de la puissance des moteurs
+#define MOTORS_TAKEOFF_POWER 20  //% de la puissance des moteurs
 #define MOTORS_STEP_PERCENT 0.1
 #define MOTORS_INTERVAL_MS 20			//6 secondes pr décoller
 
@@ -56,6 +66,7 @@ extern SystemMotorOffsets motorOffsets;
 
 
 void mainloop_drone_control(void);
+void testloop_drone_control(void);
 
 void decollage(void);
 float normalize_with_deadzone(int raw, int center, int deadzone);

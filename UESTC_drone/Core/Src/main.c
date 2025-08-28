@@ -114,20 +114,46 @@ int main(void)
   config_BLE_drone();
   //Config moteurs
   DC_Motor_Init();
-
-  DC_Motor_SetDuty(1, 15);	//debug
-  DC_Motor_SetDuty(2, 15);
-  DC_Motor_SetDuty(3, 15);
-  DC_Motor_SetDuty(4, 15);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//	  mainloop_drone_control();
 
-    /* USER CODE END WHILE */
+	  if (MODE_CHOICE == MODE_NORMAL){		//pour choisir le mode, allez dans mainloop.h
+		  mainloop_drone_control();
+	  }
+	  else if (MODE_CHOICE == MODE_TEST_JOYSTICKS){
+		  testloop_drone_control();
+	  }
+	  else if (MODE_CHOICE == MODE_TEST_20_PERCENT){
+		  if (buttons.FRONT_OFFSET_BUTTON && flags.BLE_CONNECTED){
+			  DC_Motor_SetDuty(MOTEUR_AVANT_DROIT, 20);
+			  DC_Motor_SetDuty(MOTEUR_AVANT_GAUCHE, 20);
+			  DC_Motor_SetDuty(MOTEUR_ARRIERE_DROIT, 20);
+			  DC_Motor_SetDuty(MOTEUR_ARRIERE_GAUCHE, 20);
+			  buttons.FRONT_OFFSET_BUTTON = false;
+
+		  }
+
+		  if (buttons.EMERGENCY_STOP_BUTTON && flags.BLE_CONNECTED){
+			  DC_Motor_SetDuty(MOTEUR_AVANT_DROIT, 0);
+			  DC_Motor_SetDuty(MOTEUR_AVANT_GAUCHE, 0);
+			  DC_Motor_SetDuty(MOTEUR_ARRIERE_DROIT, 0);
+			  DC_Motor_SetDuty(MOTEUR_ARRIERE_GAUCHE, 0);
+			  buttons.EMERGENCY_STOP_BUTTON = false;
+
+		  }
+	  	  }
+	  else {
+		  //ne rien faire
+	  }
+
+
+
+
+    /* USER CODE END +WHILE */
 
     /* USER CODE BEGIN 3 */
   }

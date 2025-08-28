@@ -1,18 +1,17 @@
-# UESTC_internship
+## UESTC_internship
 
 #NOTES A MOI MEME 
 
-- problème sur les moteurs : 
+- c'est ici que je mettais mes notes au cours du projet, pour ne pas oublier
+quoi que ce soit d'une séance à l'autre
 
-M1 : fonctionne pas du tout
-M2 : fonctionne bien
-M3 : fonctionne avec un retard
-M4 : fonctionne bien
 
-Le problème ne vient pas de la batterie car en débranchant M2 et M4, ça ne change rien. 
-J'ai testé les drivers, ils ont l'air de fonctionner. 
-Après un test avec le multimètre, les broches des connecteurs se sont dessouder, il suffit juste de rajouter de l'étain. 
+#GUIDE DU PROJET
 
-- la manette fonctionne pas trop mal : un peu lente à se connecter (à cause du reset de la carte BLE)
-- besoins de redémarrer quand ça ne marche pas 
+For students that will pursue my project in the future. If you need to know anything, feel free to contact me : 
+
+Wechat : Hugocrd57
+
+Linkedin : www.linkedin.com/in/hugo-cordi
+
 

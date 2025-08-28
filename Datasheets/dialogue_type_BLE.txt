@@ -1,0 +1,44 @@
+// === Initialisation ===
+MCU → TD5322A:       AT\r\n
+TD5322A → MCU:       ok\r\n
+
+// === Vérification du rôle ===
+MCU → TD5322A:       AT+ROLE\r\n
+TD5322A → MCU:       +ROLE=SERVER\r\nOK\r\n
+// Si besoin : changer le rôle et redémarrer
+// MCU → TD5322A:   AT+ROLE=0\r\n
+// TD5322A → MCU:   ok\r\n
+// MCU → TD5322A:   AT+RESET\r\n
+
+// === Définir le nom BLE (optionnel) ===
+MCU → TD5322A:       AT+BLENAME=DroneBLE\r\n
+TD5322A → MCU:       ok\r\n
+MCU → TD5322A:       AT+RESET\r\n
+TD5322A → MCU:       ok\r\n
+
+// === Configurer sécurité (optionnel) ===
+MCU → TD5322A:       AT+SECURITY=2\r\n
+TD5322A → MCU:       ok\r\n
+MCU → TD5322A:       AT+PIN=123456\r\n
+TD5322A → MCU:       ok\r\n
+MCU → TD5322A:       AT+RESET\r\n
+TD5322A → MCU:       ok\r\n
+
+// === Démarrer la publicité BLE ===
+MCU → TD5322A:       AT+ADV=1\r\n
+TD5322A → MCU:       ok\r\n
+
+// === En attente de connexion par un PC/téléphone ===
+// Une fois connecté :
+TD5322A → MCU:       BLE_CONN\r\n
+
+// === Communication BLE ===
+// MCU envoie une donnée vers le PC via BLE (caractéristique FF01)
+MCU UART → TD5322A:  HELLO PC\n
+
+// Le PC (via BLE write sur FF02) envoie vers la puce
+// La puce transfère vers MCU :
+TD5322A UART → MCU:  HELLO MCU\n
+
+// === Déconnexion détectée ===
+TD5322A → MCU:       BLE_DISC\r\n
